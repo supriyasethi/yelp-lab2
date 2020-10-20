@@ -2,8 +2,13 @@ import React from 'react';
 import {Grid} from '@material-ui/core';
 import LoginSignupTopBar from '../../helpers/LoginSignupTopBar';
 import SignupBody from './SignupBody.jsx';
+import { useHistory } from 'react-router-dom';
 
 export default function SignupPage(){
+    let history = useHistory(); 
+    if(!localStorage.getItem('token')){
+		history.push('/home');
+	}
     return (    
         <Grid container direction="column">
             <Grid item >

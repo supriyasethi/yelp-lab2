@@ -2,18 +2,8 @@ import React from 'react';
 import {Grid} from '@material-ui/core';
 import SignupForm from './SignupForm';
 import logo from '../../assets/LoginPageimg.PNG';
-import {makeStyles} from '@material-ui/styles';
 
-const useStyles = makeStyles( () => ({
-    img: {
-        margin: '150px',
-        display: 'block',
-        maxWidth: '100%',
-        maxHeight: '100%',
-      },
- })); 
-const SignupBody = () => {
-    const classes = useStyles();
+const SignupBody = () => {    
     return (
         <Grid container
         direction="row"

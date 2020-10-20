@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/styles";
 import { Typography, Divider, Button, Link } from "@material-ui/core";
 //import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import logo from "../../assets/homepage1.jpg";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -44,25 +43,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Orders() {
-
-	//let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+	
 	let history = useHistory();
-	const [checked, setChecked] = React.useState([1]);
+	//const [checked, setChecked] = React.useState([1]);
 	let [state, setState] = React.useState({
 		orders: [],
 		delieverystatus: "",
 		orderfilter: "",
 	});
 
-	var newOrder = [];
-	const data = localStorage.getItem("restaurantId");
-
+	
+	
 	useEffect(() => {
+		
+		var newOrder = [];
+		const data = localStorage.getItem("restaurantId");
 		console.log("data", data);
 		axios.defaults.withCredentials = true;
-		axios
-			.get(httpURL+"/get/orders", {
+		//axios.get("http://54.219.75.46:3001/get/orders", {
+		axios.get("http://localhost:3001/get/orders", {
 				params: {
 					restaurantId: data,
 				},
@@ -102,9 +101,9 @@ function Orders() {
 			restaurantId: resId,
 		};
         console.log('orderinfo', orderInfo);
-		axios.defaults.withCredentials = true;
-		axios
-			.post(httpURL+"/update/order", orderInfo)
+		axios.defaults.withCredentials = true;		
+		//axios.post("http://54.219.75.46:3001/update/order", orderInfo)
+		axios.post("http://localhost:3001/update/order", orderInfo)
 			.then((response) => {
 				console.log("Status code: ", response.status);
 				if (response.status === 200) {
@@ -255,6 +254,7 @@ function Orders() {
 												}>
 												Update Order
 											</Button>
+											{msg}
 										</div>
 									</React.Fragment>
 								}

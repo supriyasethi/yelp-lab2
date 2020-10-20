@@ -4,7 +4,7 @@ import {Divider, Grid} from '@material-ui/core';
 import Body from './Body'
 import Menu from './Menu'
 import { makeStyles } from '@material-ui/core/styles';
-import { useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import LoginSignupTopBar from '../../helpers/LoginSignupTopBar';
 
 const useStyles = makeStyles((theme) => ({
@@ -15,9 +15,12 @@ const useStyles = makeStyles((theme) => ({
     
 }));
 
-export default function ProfileU(){    
+export default function ProfileU(){  
+    let history = useHistory();  
    const classes = useStyles(); 
-
+   if(!localStorage.getItem('token')){
+	history.push('/home');
+    }
     return (
       <div className={classes.root}>
       <Grid container direction="column">

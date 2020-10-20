@@ -1,4 +1,4 @@
-import React, { Component, useState } from'react';
+import React from'react';
 import styles from './TopBar.module.css'
 import logo from '../../assets/YelpLogo1.jpg';
 import {Typography, AppBar, Toolbar} from '@material-ui/core';
@@ -23,12 +23,7 @@ const TopBar = () => {
 
     function handleHomeClick() {    
         history.push("/homea");
-    }
-    
-    function handleSignupClick() {
-        history.push("/signup");
-    }
-
+    }    
     
        return(
         <AppBar position="static" color='default' >

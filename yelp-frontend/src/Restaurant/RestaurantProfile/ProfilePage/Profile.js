@@ -4,6 +4,7 @@ import {Divider, Grid} from '@material-ui/core';
 import ProfileBody from './ProfileBody'
 import RestaurantMenu from './RestaurantMenu'
 import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 //import { useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -15,7 +16,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Profile(){    
-  
+  let history = useHistory(); 
+    if(!localStorage.getItem('token')){
+		history.push('/home');
+	}
   const classes = useStyles(); 
 
     return (

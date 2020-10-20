@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 //import { IconButton, Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import { Typography, Button, Divider } from "@material-ui/core";
+import { Typography,  Divider } from "@material-ui/core";
 //import { connect, useDispatch } from "react-redux";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
@@ -55,7 +55,7 @@ function Info() {
 	useEffect(() => {
         const data = localStorage.getItem('restaurantId');
 		axios.defaults.withCredentials = true;
-		axios.get(httpURL+"/get/bizp",
+		axios.get("http://localhost:3001/get/bizp",
 		{params : {
 			restaurantId: data
 		  }}

@@ -3,10 +3,14 @@ import {Grid} from '@material-ui/core';
 import ProfileHeader from '../ProfileHeader.jsx';
 import ProfileInfo from './ProfileInfo.jsx';
 import LoginSignupTopBar from '../../../helpers/LoginSignupTopBar.jsx';
+import { useHistory } from 'react-router-dom';
 //import { connect } from 'react-redux';
 
  function ProfileUpdate(){
-           
+    let history = useHistory(); 
+    if(!localStorage.getItem('token')){
+		history.push('/home');
+	}      
     return (    
         <Grid container direction="column" spacing={20}>
             <Grid item >

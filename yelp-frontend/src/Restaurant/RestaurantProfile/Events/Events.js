@@ -2,9 +2,14 @@ import React from 'react';
 import {Grid} from '@material-ui/core';
 import EventsForm from './EventsForm.jsx';
 import TopBar from '../../TopBar/TopBar';
+import { useHistory } from 'react-router-dom';
 //import { connect } from 'react-redux';
 
  function Events(){
+    let history = useHistory(); 
+    if(!localStorage.getItem('token')){
+		history.push('/home');
+	}
            
     return (    
         <Grid container direction="column" spacing={20}>

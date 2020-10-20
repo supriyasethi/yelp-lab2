@@ -1,13 +1,16 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {Grid} from '@material-ui/core';
 import UserInfo from './UserInfo.jsx';
 import UserDetails from './UserDetails.jsx';
-import { connect } from 'react-redux';
+//import { connect } from 'react-redux';
 import LoginSignupTopBar from '../../../helpers/LoginSignupTopBar.jsx';
-import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
  function Profile(){  
-
+    let history = useHistory(); 
+    if(!localStorage.getItem('token')){
+		history.push('/home');
+	}
        
     return (    
         <Grid container direction="column" spacing={50}>

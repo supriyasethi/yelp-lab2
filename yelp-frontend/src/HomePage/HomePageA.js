@@ -5,19 +5,19 @@ import logo from '../assets/YelpLogo.jpg'
 import styles from './HomePage.module.css';
 import { useHistory } from 'react-router-dom';
 import { useLocation } from "react-router-dom";
-import {Button, TextField, Typography} from '@material-ui/core';
-import cookie from 'react-cookies';
+import {Button} from '@material-ui/core';
 
 export default function HomePageA(){
     const location = useLocation();
     let history = useHistory(); 
     function handleBusiness() {
-        if (cookie.load('cookie')) {
+        if(!localStorage.getItem('token')){
+            history.push("/loginbiz");
+        } else {
             history.push('/bizp');
-        }else {        
-        history.push("/loginbiz"); }
+            }      
     }
-    if (!cookie.load('cookie')) {
+    if(!localStorage.getItem('token')){
         history.push('/home');
     }
     return (    

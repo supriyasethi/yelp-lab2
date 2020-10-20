@@ -1,18 +1,16 @@
-import React, { Component, useState, useEffect } from'react';
+import React, { useState } from'react';
 import styles from './Navbar.module.css'
-import {Button, TextField, Typography, Link} from '@material-ui/core';
+import {Button, Link} from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import cookie from 'react-cookies';
-import axios from 'axios';
 //import { setLogout,fetchProfile } from "../../js/actions/index";
 //import { connect, useDispatch } from "react-redux";
 
 
 const NavbarA = ({user, id}) => {  
 
-    let history = useHistory();      
-    let curruser = '';
-    let [data, setData] = useState();
+    let history = useHistory();          
+    //let [data, setData] = useState();
     //const dispatch = useDispatch();
     function handleLogoutClick() {
       cookie.remove('cookie', { path: '/' })

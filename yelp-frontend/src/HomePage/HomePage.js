@@ -1,25 +1,25 @@
 import React from 'react';
 import Navbar from './Navbar/Navbar';
 import { Searchbar } from '../Searchbar/Searchbar';
-import {Button, TextField, Typography} from '@material-ui/core';
+import {Button} from '@material-ui/core';
 import logo from '../assets/YelpLogo.jpg'
 import styles from './HomePage.module.css';
 import { useHistory } from 'react-router-dom';
-import cookie from 'react-cookies';
-
 
 export default function HomePage(){
     let history = useHistory();  
     
     function handleBusiness() {
-        if (cookie.load('cookie')) {
+        if(!localStorage.getItem('token')){
+            history.push("/loginbiz");
+        } else {
             history.push('/bizp');
-        }else {        
-        history.push("/loginbiz"); }
+            }        
     }
-    if (cookie.load('cookie')) {
+    if(localStorage.getItem('token')){
         history.push('/homea');
     }
+    
     return (  
         <div className={styles.img} >
             <div className={styles.button}>     

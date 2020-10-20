@@ -6,8 +6,13 @@ import UserDetails from './UserDetails.jsx';
 import { connect } from 'react-redux';
 import LoginSignupTopBar from '../../../helpers/LoginSignupTopBar.jsx';
 import { useLocation } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 
  function Profile({data}){
+    let history = useHistory(); 
+    if(!localStorage.getItem('token')){
+		history.push('/home');
+	}
     const location = useLocation();
     return (    
         <Grid container direction="column" spacing={50}>

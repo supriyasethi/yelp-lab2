@@ -26,9 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function EventsList({data}) {
-
-	//let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+	
 	let history = useHistory();	
 	let [eventmsg, seteventmsg] = useState();
 	let [searchkey, setsearchkey] = useState();
@@ -36,11 +34,13 @@ function EventsList({data}) {
 		events: [],
 	});
 
-	var newEvent = [];
+	
 
 	useEffect(() => {
+		var newEvent = [];
 		axios.defaults.withCredentials = true;
-		axios.get(httpURL+"/get/event").then((response) => {
+		//axios.get("http://54.219.75.46:3001/get/event").then((response) => {
+		axios.get("http://localhost:3001/get/event").then((response) => {
 			//update the state with the response data
 			for (var i = 0; i < response.data.length; i++) {
 				var temp = response.data[i];
@@ -59,8 +59,10 @@ function EventsList({data}) {
 		setsearchkey(e.target.value);
 	}
 	function handleSearchEvent() {
+		var newEvent = [];
 		axios.defaults.withCredentials = true;
-		axios.get(httpURL+"/get/eventkey", {
+		//axios.get("http://54.219.75.46:3001/get/eventkey", {
+		axios.get("http://localhost:3001/get/eventkey", {
 			params: {
 				key: searchkey
 			}
@@ -92,7 +94,8 @@ function EventsList({data}) {
 		}
 		if (cookie.load('cookie')) {
 			axios.defaults.withCredentials = true;
-			axios.post(httpURL+"/insert/eventregister", postInfo).then((response) => {
+			//axios.post("http://54.219.75.46:3001/insert/eventregister", postInfo).then((response) => {
+			axios.post("http://localhost:3001/insert/eventregister", postInfo).then((response) => {
 				if(response.status === 200) {                					
 					if (cookie.load('cookie')) {
 						console.log(response.data);

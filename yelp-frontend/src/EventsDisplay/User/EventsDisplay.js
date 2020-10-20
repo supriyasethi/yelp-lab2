@@ -2,7 +2,6 @@ import React from 'react';
 import {Grid} from '@material-ui/core';
 import EventsList from './EventsList.jsx';
 import LoginSignupTopBar from '../../helpers/LoginSignupTopBar';
-import { useLocation } from "react-router-dom";
 //import { connect } from 'react-redux';
 
  function EventsDisplay({props}){

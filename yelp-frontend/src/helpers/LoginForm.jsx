@@ -3,11 +3,8 @@ import {Button, TextField, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-//import Cookies from 'universal-cookie';
-import cookie from 'react-cookies';
+import jwt_decode from 'jwt-decode';
 //import { setLogin } from "../js/actions/index";
-
-
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -20,8 +17,8 @@ const useStyles = makeStyles((theme) => ({
 const LoginForm = ({title, sender}) => {
     let history = useHistory(); 
     var httpURL1 = '';
-    //let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+    let httpURL = "http://localhost:3001";
+	//let httpURL = "http://54.219.75.46:3001";
      //const dispatch = useDispatch();
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -58,29 +55,48 @@ const LoginForm = ({title, sender}) => {
             httpURL1 = httpURL+"/login/biz";
         }
         axios.defaults.withCredentials = true;
+        console.log('logininfo', loginFormInfo);
         axios.post(httpURL1,loginFormInfo)
         .then(response => {
             console.log("Status code: ", response.status);
             if(response.status === 200) {                
                 console.log('login response', response);
                 if (sender === 'user') {
-                    if (cookie.load('cookie')) {
-                        localStorage.setItem('userId',response.data[0].userId);
-                        history.push("/homea");                        
-                        //redirectVar = <Redirect to= "/home"/>
+                    var token = response.data.token;
+                    if(token.length > 0) {
+                    localStorage.setItem("token", token);
+
+                    var decoded = jwt_decode(token.split(' ')[1]);
+                    localStorage.setItem("user_id", decoded._id);
+                    localStorage.setItem("username", decoded.username);
+                    history.push("/homea"); 
                     }
+                    // if (cookie.load('cookie')) {
+                    //     localStorage.setItem('userId',response.data[0].userId);
+                                               
+                    //     //redirectVar = <Redirect to= "/home"/>
+                    // }
                  }
                 else { 
-                    console.log(response.data[0].restaurantId);
-                    if (cookie.load('cookie')) {
-                        localStorage.setItem('restaurantId',response.data[0].restaurantId);
-                        history.push("/bizp");                        
-            }
+                    //console.log(response.data[0].restaurantId);
+                    token = response.data.token;
+                    if(token.length > 0) {
+                    localStorage.setItem("token", token);
+
+                    decoded = jwt_decode(token.split(' ')[1]);
+                    localStorage.setItem("restaurant_id", decoded._id);
+                    localStorage.setItem("res_u_name", decoded.username);
+                    history.push("/bizp"); 
+                    }
+                //         if (cookie.load('cookie')) {
+                 //             localStorage.setItem('restaurantId',response.data[0].restaurantId);
+                //             history.push("/bizp");                        
+                // }
         }
         }
         })
         .catch(error => { 
-            console.log(error.response)
+            console.log('error',error);
             if(error.response.status === 401) {
                 //authFlag = true;
                 setauthErr(<p class="alert alert-danger" role="alert">{error.response.data}</p>);

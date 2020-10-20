@@ -9,9 +9,8 @@ export default function LoginUser(){
         logintitle : "Log In to Yelp",
         sender : "user"
     }
-    console.log('propsinfo sender', propinfo.sender);
+    console.log('propsinfo sender', propinfo.sender);    
     
-    let logintitle = 'Log In to Yelp';
     return (    
         <Grid container direction="column">
             <Grid item >

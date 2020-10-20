@@ -1,7 +1,6 @@
 import React from 'react';
 import {makeStyles} from '@material-ui/styles';
 import { Searchbar } from '../../Searchbar/Searchbar';
-import {Typography} from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles( () => ({

@@ -3,8 +3,6 @@ import {Button, TextField, Typography, Divider} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-//import Cookies from 'universal-cookie';
-import cookie from 'react-cookies';
 //import { setLogin } from "../js/actions/index";
 
 const useStyles = makeStyles( (theme) => ({

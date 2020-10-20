@@ -48,8 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UserDetails() {
-  //let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+  
   const classes = useStyles();
   let history = useHistory();
   let [username, setUsername] = useState('');
@@ -75,7 +74,8 @@ export default function UserDetails() {
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
-    axios.get(httpURL+"/get/userp",{
+    //axios.get("http://54.219.75.46:3001/get/userp",{
+    axios.get("http://localhost:3001/get/userp",{
       params: {
         userId : userId }
       })

@@ -3,7 +3,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import {Typography, Button, Divider, TextField} from '@material-ui/core';
 //import { connect, useDispatch } from "react-redux";
 import axios from 'axios';
-import ImageUploader from 'react-images-upload';
+//import ImageUploader from 'react-images-upload';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles( (theme) => ({

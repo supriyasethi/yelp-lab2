@@ -10,7 +10,7 @@ var redis = require('redis');
 var connectRedis = require('connect-redis');
 var auth = require('./middleware/auth');
 var fileupload = require('express-fileupload');
-const { mongoDB } = require('./config');
+const { mongoDB } = require('./utils/config');
 const mongoose = require('mongoose');
 
 app.use(fileupload());
@@ -27,8 +27,8 @@ var redisClient = redis.createClient({
 app.set('view engine', 'ejs');
 
 //use cors to allow cross origin resource sharing
-//app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+//app.use(cors({ origin: true, credentials: true }));
 
 //use express session to maintain session data
 app.use(session({
@@ -56,7 +56,8 @@ app.use(require('connect').bodyParser());
 
 //Allow Access Control
 app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://54.219.75.46:3000');
+    //res.setHeader('Access-Control-Allow-Origin', 'http://54.219.75.46:3000');
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
@@ -86,14 +87,14 @@ const Signup = require("./routes/Signup");
 app.use("/login", Login);
 app.use("/signup", Signup);
 // //app.use(auth);
- const Update = require("./routes/Update");
-// const Insert = require("./routes/Insert");
+const Update = require("./routes/Update");
+const Insert = require("./routes/Insert");
 // const Fetch = require("./routes/Fetch");
 
 
 
 app.use("/update", Update);
-// app.use("/insert", Insert);
+app.use("/insert", Insert);
 // app.use("/get", Fetch);  
 
 app.post('/upload', (req, res) => {

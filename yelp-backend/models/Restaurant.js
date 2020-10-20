@@ -22,14 +22,14 @@ var Restaurant = new Schema({
         category: {type: String, required: false},
     }],
     orders: [{
-        userid: {type: Number, required: false},
+        userid: {type: String, required: false},
         orderitem: {type: String, required: false},
         delieveryoption: {type: String, required: false},
         delieverystatus: {type: String, required: false},
         orderstatus: {type: String, required: false},
     }],
     reviews: [{
-        userid: {type: Number, required: false},
+        userid: {type: String, required: false},
         review: {type: String, required: false},
         rating: {type: String, required: false},
     }],
@@ -41,7 +41,7 @@ var Restaurant = new Schema({
         location: {type: String, required: false},
         hashtags: {type: String, required: false},
         usersregistered: [{
-            userid: {type: Number, required: false},
+            userid: {type: String, required: false},
             userfirstname: {type: String, required: false},
             userlastname: {type: String, required: false},
         }]

@@ -44,8 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Menu({data}) {
- //let httpURL = "http://localhost:3001";
- let httpURL = "http://54.219.75.46:3001";
+ 
 	let history = useHistory();
     const [checked, setChecked] = React.useState([1]);
 	let [state, setState] = React.useState({
@@ -53,11 +52,10 @@ function Menu({data}) {
         pickup: false,
         delievery: false  
 	});
-    const newChecked = [...checked];
-    var newMenu = [];	   
-    var newid = [];
+    const newChecked = [...checked];    
 
 	useEffect(() => {
+    var newMenu = [];	      
         const data = localStorage.getItem('restaurantId');
 		axios.defaults.withCredentials = true;
 		axios.get("http://localhost:3001/get/menu", {
@@ -141,7 +139,7 @@ function Menu({data}) {
         }
 
         axios.defaults.withCredentials = true;
-         axios.post('http://localhost:3001/insert/order', orderInfo)
+         axios.post("http://localhost:3001/insert/order", orderInfo)
          .then(response => {
              console.log("Status code: ", response.status);
              if(response.status === 200) {

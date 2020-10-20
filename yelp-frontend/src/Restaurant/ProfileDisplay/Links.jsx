@@ -1,17 +1,12 @@
-import { recomposeColor, Typography, Divider } from "@material-ui/core";
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
-import BusinessOutlinedIcon from "@material-ui/icons/BusinessOutlined";
 import StarOutlinedIcon from "@material-ui/icons/StarOutlined";
 import PhotoSizeSelectActualOutlinedIcon from "@material-ui/icons/PhotoSizeSelectActualOutlined";
-import FastfoodOutlinedIcon from "@material-ui/icons/FastfoodOutlined";
-import ListAltOutlinedIcon from "@material-ui/icons/ListAltOutlined";
-import EventIcon from '@material-ui/icons/Event';
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({

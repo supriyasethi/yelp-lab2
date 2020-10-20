@@ -7,9 +7,7 @@ export default function LoginRestaurant(){
     let propinfo = {
         logintitle : "Log In to Yelp Business",
         sender : "biz"
-    }
-
-    let logintitle = 'Log In to Yelp Business';
+    }    
     return (    
         <Grid container direction="column">
             <Grid item >
