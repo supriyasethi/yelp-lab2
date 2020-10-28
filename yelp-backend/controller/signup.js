@@ -1,77 +1,114 @@
-var con = require('../connection');
-const mysql = require('mysql');
-const { check, validationResult } = require("express-validator");
+"use strict";
+const bcrypt = require('bcrypt');
+var passwordHash = require('password-hash');
+const User = require("../models/User");
+const Restaurant = require("../models/Restaurant");
 
-function user(req, res){
+function signupUser(req, res){
     console.log("Inside Signup Post Request");  
-  console.log("Req Body : ",req.body);  
-  const errors = validationResult(req).array();
-  if (errors != '') {
-    var err = JSON.stringify(errors);
-    console.log('err', err);
-    res.writeHead(422,{
-      'Content-Type' : 'text/plain'
-  }); 
-  res.end(err);
-  } 
-  else {  
-    var sql = 
-      mysql.format("INSERT INTO yelplab1.user (first_name, last_name, email_id, city) VALUES('"+req.body.firstname+"','" + req.body.lastname+"','" +req.body.username+"','" +req.body.city+"')");
-      con.query(sql, function (err, result) {
-      if (err) {          
-        res.status(401).send(err);      
-  }
-      else {
-      console.log( result);
-      sql = mysql.format("INSERT INTO yelplab1.login (username, password, userId) VALUES('"+ req.body.username+"','" +req.body.password+"'," + result.insertId+")");
-      con.query(sql, function (err, result) {
-        if (err) {         
-        res.status(401).send(err);
-        }
-          else {
-            console.log( result);
-            res.writeHead(200,{
-              'Content-Type' : 'text/plain'
-          })
-            res.end("Signup successful!");
-          }        
-        });
-       }
-     });          
+  console.log("Req Body : ",req.body);
+  let hashedPassword = passwordHash.generate(req.body.login.password);	
+    console.log(hashedPassword);
+	const userdata = new User({
+		firstname: req.body.firstname,
+		lastname: req.body.lastname,
+		dateofbirth: req.body.birthday,
+		city: req.body.city,
+		state: req.body.state,
+		country: req.body.country,
+		nickname: req.body.nickname,
+		gender: req.body.gender,
+		emailid: req.body.username,
+		phonenumber: req.body.phonenumber,
+		yelpingsince: req.body.yelpingsince,
+		thingsilove:req.body.thingsilove,
+		findmein: req.body.findmein,
+		login: {
+			username: req.body.login.username,
+			password: hashedPassword,
+		},
+	});
+	try {
+		User.findOne({emailid: req.body.username}, (error, user) => {
+			if(error) {
+				res.status(500).end();
+			}
+			if(user) {
+				res.status(400).json({message: 'Username already exists!'})
+			}
+			else {
+				userdata.save((error, data) => {
+					if (error) {
+						res.writeHead(500, {
+							'Content-Type': 'text/plain'
+						})
+						res.send(error);
+					}
+					else {
+						res.writeHead(200, {
+							'Content-Type': 'text/plain'
+						})
+						res.json(data);
+					}
+				})
+		}
+	});        
+} catch(err) {
+        res.json({message: err});
+    }  
+ 
+}
+
+function signupBiz(req, res) {
+    console.log("Inside Signup Post Request");  
+    console.log("Req Body : ",req.body);    
+    let hashedPassword = passwordHash.generate(req.body.login.password);	
+    console.log(hashedPassword);
+	const bizdata = new Restaurant({
+		name: req.body.name,
+		city: req.body.city,
+		description: req.body.description,
+		address: req.body.address,
+		timing: req.body.timing,		
+		emailid: req.body.username,
+		website: req.body.website,
+		phonenumber: req.body.phonenumber,		
+		login: {
+			username: req.body.login.username,
+			password: hashedPassword,
+		},
+	});
+	try {
+		Restaurant.findOne({emailid: req.body.username}, (error, bizuser) => {
+			if(error) {
+				res.status(500).end();
+			}
+			if(bizuser) {
+				res.status(400).json({message: 'Username already exists!'})
+			}
+			else {
+				bizdata.save((error, data) => {
+					if (error) {
+						res.writeHead(500, {
+							'Content-Type': 'text/plain'
+						})
+						res.send(error);
+					}
+					else {
+						res.writeHead(200, {
+							'Content-Type': 'text/plain'
+						})
+						res.json(data);
+					}
+				})
+		}
+	});
+ } catch(err) {
+        res.json({message: err});
     }
 }
 
-function biz(req, res) {
-    console.log("Inside Signup Post Request");  
-  console.log("Req Body : ",req.body);    
-    var sql = 
-      mysql.format("INSERT INTO yelplab1.restaurant (name, email_id, city) VALUES('"+req.body.name+"','" +req.body.username+"','" +req.body.city+"')");
-      console.log(sql);
-      con.query(sql, function (err, result) {
-      if (err) {          
-        res.status(401).send(err);      
-        }
-      else {
-      console.log( result);
-      sql = mysql.format("INSERT INTO yelplab1.loginr (username, password, restaurantId) VALUES('"+ req.body.username+"','" +req.body.password+"'," + result.insertId+")");
-      console.log(sql);
-      con.query(sql, function (err, result) {
-        if (err) {         
-        res.status(401).send(err);
-        }
-          else {
-            console.log( result);
-            res.writeHead(200,{
-              'Content-Type' : 'text/plain'
-          })
-            res.end("Signup successful!");
-          }        
-        });
-       }
-     });  
-}
-
 module.exports = {
-    user,
-    biz
+    signupUser,
+    signupBiz
 }

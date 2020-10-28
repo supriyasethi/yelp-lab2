@@ -1,117 +1,137 @@
-var con = require('../connection');
-const mysql = require('mysql');
-var express = require('express');
-var app = express();
-const { check, validationResult } = require("express-validator");
-var fileupload = require('express-fileupload');
-function userprofile(req, res) {
-  console.log("Inside Update User Profile Post Request");  
-  console.log("Req Body : ",req.body);    
+var express = require("express");
+const Users = require("../models/User");
+const Restaurants = require("../models/Restaurant");
 
-  var sql = "UPDATE user SET \
-        first_name = '" + req.body.firstname + "', \
-        last_name = '" + req.body.lastname + "', \
-        nickname = '" + req.body.nickname	 + "', \
-        date_of_birth = '" + req.body.birthday + "', \
-        state = '" + req.body.state	 + "', \
-        country = '" + req.body.country	+ "', \
-        gender = '" + req.body.gender + "', \
-        phone_number = '" + req.body.phonenumber + "', \
-        yelping_since = '" + req.body.yelpingsince + "', \
-        things_i_love = '" + req.body.thingsilove + "', \
-        find_me_in = '" + req.body.findmein + "' \     WHERE userId = '"+ req.body.userId +"'";
-  con.query(sql,(err,rows,fields) => {  
-    if (!err) {
-      if(rows != '') {
-        res.cookie('cookie',"admin",{maxAge: 900000, httpOnly: false, path : '/'});
-          req.session.user = req.body.username;
-          currentUser = req.session.user;
-          console.log('user', req.session.user);
-          res.writeHead(200,{
-              'Content-Type' : 'text/plain'
-          })
-          res.end("Successful Login!");
-      }
-      else {
-           res.writeHead(401,{
-              'Content-Type' : 'text/plain'
-          })
-          res.end("Database Error!");
-      }
-      console.log(rows); }
-    else
-      console.log(err);
-  });
+function updateUser(req, res) {
+	console.log("Inside Update User Profile Post Request");
+	console.log("Req Body : ", req.body);
+	try {
+		Users.updateOne(
+			{ _id: req.params.userid },
+			{
+				$set: {
+					firstname: req.body.firstname,
+					lastname: req.body.lastname,
+					dateofbirth: req.body.birthday,
+					city: req.body.city,
+					state: req.body.state,
+					country: req.body.country,
+					nickname: req.body.nickname,
+					gender: req.body.gender,
+					emailid: req.body.emailid,
+					phonenumber: req.body.phonenumber,
+					yelpingsince: req.body.yelpingsince,
+					thingsilove: req.body.thingsilove,
+					findmein: req.body.findmein,
+				},
+			},
+			{ upsert: true },
+			function (error, data) {
+				if (error) {
+					console.log("error", error);
+					res.json(500).send(error);
+				} else {
+					console.log("data", data);
+					res.status(200).json(data);
+				}
+			}
+		);
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
 }
 
-function bizprofile(req, res) {
-    console.log("Inside Update Restaurant Profile Post Request");  
-  console.log("Req Body : ",req.body);    
-  var sql = "UPDATE restaurant SET \
-        name = '" + req.body.name + "', \
-        description = '" + req.body.description + "', \
-        address = '" + req.body.address + "', \
-        timing = '" + req.body.timing	 + "', \
-        website = '" + req.body.website	+ "', \
-        phonenumber = '" + req.body.phonenumber + "' WHERE restaurantId = "+ req.body.restaurantId ;      
-        
-  con.query(sql,(err,rows,fields) => {  
-    if (!err) {
-      if(rows != '') {
-        res.cookie('cookie',"admin",{maxAge: 900000, httpOnly: false, path : '/'});
-          req.session.user = req.body.username;
-          currentUser = req.session.user;
-          console.log('user', req.session.user);
-          res.writeHead(200,{
-              'Content-Type' : 'text/plain'
-          })
-          res.end("Successful Insert!");
-      }
-      else {
-           res.writeHead(401,{
-              'Content-Type' : 'text/plain'
-          })
-          res.end("Database Error!");
-      }
-      console.log(rows); }
-    else
-      console.log(err);
-  });
+function updateBiz(req, res) {
+	console.log("Inside Update Restaurant Profile Post Request");
+	console.log("Req Body : ", req.body);
+	try {
+		Restaurants.updateOne(
+			{ _id: req.params.resid },
+			{
+				$set: {
+					name: req.body.name,
+					city: req.body.city,
+					description: req.body.description,
+					address: req.body.address,
+					timing: req.body.timing,
+					emailid: req.body.emailid,
+					website: req.body.website,
+					phonenumber: req.body.phonenumber,
+				},
+			},
+			{ upsert: true },
+			function (error, data) {
+				if (error) {
+					console.log("error", error);
+					res.json(500).send(error);
+				} else {
+					console.log("data", data);
+					res.status(200).json(data);
+				}
+			}
+		);
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
 }
 
-function updateorder(req, res) {
-  console.log("Inside Update Order Profile Post Request");  
-console.log("Req Body : ",req.body);    
-var sql = "UPDATE orders SET \
-      delieveryStatus = '" + req.body.delieveryStatus + "', \
-      orderFilter = '" + req.body.orderFilter + "' WHERE orderId = "+ req.body.orderId + " AND restaurantId = " +   req.body.restaurantId ; 
-      
-con.query(sql,(err,rows,fields) => {  
-  if (!err) {
-    if(rows != '') {
-      res.cookie('cookie',"admin",{maxAge: 900000, httpOnly: false, path : '/'});
-        req.session.user = req.body.username;
-        currentUser = req.session.user;
-        console.log('user', req.session.user);
-        res.writeHead(200,{
-            'Content-Type' : 'text/plain'
-        })
-        res.end("Successful Insert!");
-    }
-    else {
-         res.writeHead(401,{
-            'Content-Type' : 'text/plain'
-        })
-        res.end("Database Error!");
-    }
-    console.log(rows); }
-  else
-    console.log(err);
-});
+function updateOrder(req, res) {
+	console.log("Inside Update Order Profile Post Request");
+	console.log("Req Body : ", req.body);
+
+	try {
+		Restaurants.updateOne(
+			{ _id: req.params.resid, "orders._id": req.params.orderid },
+			{
+				$set: {
+					"orders.delieverystatus": req.body.delieverystatus,
+					"orders.orderstatus": req.body.orderstatus,
+				},
+			},
+			function (error, data) {
+				if (error) {
+					console.log("error", error);
+					res.json(500).send(error);
+				} else {
+					console.log("data", data);
+					res.status(200).json(data);
+				}
+			}
+		);
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
+
+	try {
+		Users.updateOne(
+			{ _id: req.params.userid, "orders.restaurantid": req.params.resid },
+			{
+				$set: {
+					"orders.delieverystatus": req.body.delieverystatus,
+					"orders.orderstatus": req.body.orderstatus,
+				},
+			},
+			function (error, data) {
+				if (error) {
+					console.log("error", error);
+					res.json(500).send(error);
+				} else {
+					console.log("data", data);
+					res.status(200).json(data);
+				}
+			}
+		);
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
 }
 
 module.exports = {
-    userprofile,
-    bizprofile,
-    updateorder
-}
+	updateUser,
+	updateBiz,
+	updateOrder,
+};

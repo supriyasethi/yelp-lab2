@@ -1,29 +1,27 @@
 "use strict";
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Users = require('../models/User');
-const Restaurants = require('../models/Restaurant');
-const {ObjectId} = require("mongodb");
+const {updateUser, updateBiz, updateOrders} = require('../controller/update');
 
+//Route to handle Post Update user profile Request Call
+router.post("/userprofile", async (req, res) => {
+	console.log("Inside update user profile route");
+	const value = await updateUser(req, res);
+	return value;
+});
 
+//Route to handle Post Update biz profile Request Call
+router.post("/bizprofile", async (req, res) => {
+	console.log("Inside update user profile route");
+	const value = await updateBiz(req, res);
+	return value;
+});
 
-//const auth = require('../middleware/auth');
-
-//router.use(auth);
-//Route to handle Post Login Request Call
-//router.post('/userprofile', updateController.userprofile);  
-
-//Route to handle Post update biz profile Request Call
-//router.post('/bizprofile', updateController.bizprofile);  
-
-//router.post('/order', updateController.updateorder); 
-
+//Route to handle Post Update orders Request Call
+router.post("/orders", async (req, res) => {
+	console.log("Inside update user profile route");
+	const value = await updateOrders(req, res);
+	return value;
+});
 
 module.exports = router;
-
-
-
-
-
-    
-    

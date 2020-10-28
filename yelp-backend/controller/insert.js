@@ -1,202 +1,240 @@
-var con = require("../connection");
-const mysql = require("mysql");
+const Users = require('../models/User');
+const Restaurants = require('../models/Restaurant');
 
-function insertevent(req, res) {
+function insertEvent(req, res) {
 	console.log("Inside Insert Event Post Request");
 	console.log("Req Body : ", req.body);
-	var sql = mysql.format(
-		"INSERT INTO events (name, description, time, date, location, hashtags, restaurantId) \
-               VALUES('" +
-			req.body.eventname +
-			"','" +
-			req.body.description +
-			"','" +
-			req.body.time +
-			"',\
-               '" +
-			req.body.date +
-			"','" +
-			req.body.location +
-			"','" +
-			req.body.hashtag +
-			"'," +
-			req.body.restaurantId +
-			")"
-	);
-	con.query(sql, function (err, result) {
-		if (err) {
-			res.status(401).send(err);
-			console.log(err);
-		} else {
-			console.log(result);
-			res.writeHead(200, {
-				"Content-Type": "text/plain",
-			});
-			res.end("Event update successful!");
-		}
-	});
+	var insertevent = {
+		name: req.body.name,
+        description: req.body.description,
+        time: req.body.time,
+        date: req.body.date,
+        location: req.body.location,
+        hashtags: req.body.hashtags
+	};
+	console.log(insertevent);
+	try {
+		 Restaurants.updateOne(
+			{ _id: req.params.id },
+			{ $push: { events: insertevent }} ,{upsert: true},
+			function (error, data) {
+				if (error) {				
+					console.log("error", error);
+					res.json(500).send(error);
+				} else {					
+					console.log("data", data);
+					res.status(200).json(data);
+				}
+			}
+        );        
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
 }
 
-function inserteventregister(req, res) {
-	console.log("Inside Insert Event Register Post Request");
-	console.log(req.session);
-	console.log("Req Body : ", req.body);
-	var sql = mysql.format(
-		"INSERT INTO eventsregister (eventId, restaurantId, userId) \
-               VALUES(" +
-			req.body.eventId +
-			"," +
-			req.body.restaurantId +
-			"," +
-			req.body.userId +
-			")"
-	);
-	con.query(sql, function (err, result) {
-		if (err) {
-			res.status(401).send(err);
-			console.log(err);
-		} else {
-			console.log(result);
-			res.writeHead(200, {
-				"Content-Type": "text/plain",
-			});
-			res.end("Event registered successfully!");
-		}
-	});
+function userRegister(req, res) {
+	var insertuserRestaurant = {
+		userid: req.params.userid,
+        userfirstname: req.body.firstname,
+        userlastname: req.body.lastname
+	};
+	var inserteventUser = {
+		name: req.body.name,
+        description: req.body.description,
+        time: req.body.time,
+        date: req.body.date,
+        location: req.body.location,
+        hashtags: req.body.hashtags
+	};
+	console.log(insertuserRestaurant);
+	try {
+		 Restaurants.updateOne(
+			{ _id: req.params.resid , 'events.name': req.body.eventname},
+			{ $push: { usersregistered: insertuserRestaurant }} ,{upsert: true},
+			function (error, data) {
+				if (error) {					
+					console.log("error", error);
+					res.json(500).send(error);
+				} else {					
+					console.log("data", data);
+					res.status(200).json(data);
+				}
+			}
+        );        
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
+
+	try {
+		Users.updateOne(
+		   { _id: req.params.userid},
+		   { $push: { events: inserteventUser }} ,{upsert: true},
+		   function (error, data) {
+			   if (error) {					
+				   console.log("error", error);
+				   res.json(500).send(error);
+			   } else {					
+				   console.log("data", data);
+				   res.status(200).json(data);
+			   }
+		   }
+	   );        
+   } catch (error) {
+	   console.log("error", error);
+	   res.send(error);
+   }
 }
 
-function insertmenu(req, res) {
+function insertMenu(req, res) {
 	console.log("Inside Insert Menu Post Request");
 	console.log("Req Body : ", req.body);
-	sql =
-		"INSERT INTO yelplab1.menu \
-                         (dishName, ingredients, price, description, category, restaurantId) VALUES( \
-                        '" +
-		req.body.dishname +
-		"','" +
-		req.body.ingredients +
-		"'," +
-		req.body.price +
-		",\
-                        '" +
-		req.body.description +
-		"','" +
-		req.body.category +
-		"'," +
-		req.body.restaurantId +
-		")";
-	con.query(sql, (err, rows, fields) => {
-		if (!err) {
-			if (rows != "") {
-				console.log("Update done");
-				res.cookie("cookie", "admin", {
-					maxAge: 900000,
-					httpOnly: false,
-					path: "/",
-				});
-				res.writeHead(200, {
-					"Content-Type": "text/plain",
-				});
-				res.end("Successful Update!");
-			} else {
-				console.log("Update Error");
-				res.writeHead(401, {
-					"Content-Type": "text/plain",
-				});
-				res.end("Database Error in Update!");
+	
+	var insertmenu = {
+		dishname: req.body.dishname,
+		ingredients: req.body.ingredients,
+		price: req.body.price,
+		description: req.body.description,
+		category: req.body.category,
+	};
+	console.log(insertmenu);
+	try {
+		 Restaurants.updateOne(
+			{ _id: req.params.id },
+			{ $push: { menu: insertmenu } },
+			function (error, data) {
+				if (error) {					
+					console.log("error", error);
+					res.json(500).send(error);
+				} else {					
+					console.log("data", data);
+					res.status(200).json(data);
+				}
 			}
-			console.log(rows);
-		} else console.log(err);
-	});
+		);
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
 }
 
-function insertreviews(req, res) {
+function insertReview(req, res) {
 	console.log("Inside Insert Reviews Post Request");
 	console.log(req.body);
-	sql =
-		"INSERT INTO reviews \
-      (restaurantId, reviews, rating, userId) VALUES( \
-      " +
-		req.body.restaurantId +
-		",'" +
-		req.body.reviews +
-		"','" +
-		req.body.rating +
-		"',\
-      " +
-		req.body.userId +
-		")";
-	con.query(sql, (err, rows, fields) => {
-		if (!err) {
-			console.log("Update done");
-			res.cookie("cookie", "admin", {
-				maxAge: 900000,
-				httpOnly: false,
-				path: "/",
-			});
-			res.writeHead(200, {
-				"Content-Type": "text/plain",
-			});
-			res.end("Succefully Inserted!");
-		} else {
-			console.log(err);
-			res.writeHead(401, {
-				"Content-Type": "text/plain",
-			});
-			if (error.response.sqlState === "23000") {
-				res.end("Reviews already given by the user");
-			} else {
-				res.end("Database Error in Update!");
+	var insertreviewRestaurant = {
+		userid: req.params.userid,
+		review: req.body.review,
+		rating: req.body.rating		
+	};
+
+	var insertreviewUser = {
+		restaurantid: req.params.resid,
+		review: req.body.review,
+		rating: req.body.rating		
+	};
+	console.log(insertreviewRestaurant);
+	try {
+		 Restaurants.updateOne(
+			{ _id: req.params.resid },
+			{ $push: { reviews: insertreviewRestaurant }} ,{upsert: true},
+			function (error, data) {
+				if (error) {					
+					console.log("error", error);
+					res.json(500).send(error);
+				} else {					
+					console.log("data", data);
+					res.status(200).json(data);
+				}
 			}
-		}
-	});
+        );        
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
+	try {
+		Users.updateOne(
+		   { _id: req.params.userid },
+		   { $push: { reviews: insertreviewUser }} ,{upsert: true},
+		   function (error, data) {
+			   if (error) {					
+				   console.log("error", error);
+				   res.json(500).send(error);
+			   } else {					
+				   console.log("data", data);
+				   res.status(200).json(data);
+			   }
+		   }
+	   );        
+   } catch (error) {
+	   console.log("error", error);
+	   res.send(error);
+   }
 }
 
-function insertorder(req, res) {
+function insertOrder(req, res) {
 	console.log("Inside Insert Order Post Request");
 	console.log(req.body);
-	sql =
-		"INSERT INTO orders \
-      (orderItem, delieveryOption, orderFilter, restaurantId, userId) VALUES( \
-      '" +
-		req.body.orderItem +
-		"','" +
-		req.body.delieveryOption +
-		"','" +
-		req.body.orderFilter +
-		"',\
-      " +
-		req.body.restaurantId +
-		"," +
-		req.body.userId +
-		")";
-	console.log("sql", sql);
-	con.query(sql, (err, rows, fields) => {
-		if (!err) {
-			console.log("Update done");
-			res.cookie("cookie", "admin", {
-				maxAge: 900000,
-				httpOnly: false,
-				path: "/",
-			});
-			res.writeHead(200, {
-				"Content-Type": "text/plain",
-			});
-			res.end("Succefully Inserted!");
-		} else {
-			console.log(err);
-			res.writeHead(401, {
-				"Content-Type": "text/plain",
-			});
-			res.end("Database Error in Update!");
-		}
-	});
+	
+	var insertorderRestaurant = {
+		userid: req.params.userid,
+		orderitem: req.body.orderitem,
+		delieveryoption: req.body.delieveryoption,
+		delieverystatus: req.body.delieverystatus,
+		orderstatus: req.body.orderstatus,
+	};
+
+	var insertorderUser = {
+		restaurantid: req.params.resid,
+		orderitem: req.body.orderitem,
+		delieveryoption: req.body.delieveryoption,
+		delieverystatus: req.body.delieverystatus,
+		orderstatus: req.body.orderstatus,
+	};
+	console.log(insertorderRestaurant);
+	try {
+		 Restaurants.updateOne(
+			{ _id: req.params.resid },
+			{ $push: { orders: insertorderRestaurant } },
+			function (error, data) {
+				if (error) {					
+					console.log("error", error);
+					res.json(500).send(error);
+				} else {					
+					console.log("data", data);
+					res.status(200).json(data);
+				}
+			}
+        );        
+	} catch (error) {
+		console.log("error", error);
+		res.send(error);
+	}
+
+	try {
+		Users.updateOne(
+		   { _id: req.params.resid },
+		   { $push: { orders: insertorderUser } },
+		   function (error, data) {
+			   if (error) {					
+				   console.log("error", error);
+				   res.json(500).send(error);
+			   } else {					
+				   console.log("data", data);
+				   res.status(200).json(data);
+			   }
+		   }
+	   );        
+   } catch (error) {
+	   console.log("error", error);
+	   res.send(error);
+   }
 }
 
 module.exports = {
-	insertevent,
-	insertmenu,
-	inserteventregister,
-	insertreviews,
-	insertorder,
+	insertEvent,
+	insertMenu,
+	userRegister,
+	insertReview,
+	insertOrder,
 };
