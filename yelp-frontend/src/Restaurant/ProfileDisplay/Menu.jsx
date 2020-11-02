@@ -13,6 +13,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import axios from "axios";
+import { connect, useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({	
 	root: {
@@ -43,7 +44,9 @@ const useStyles = makeStyles((theme) => ({
       
 }));
 
-function Menu({data}) {
+function Menu(restaurantData) {
+
+  let restaurantMenu = restaurantData.restaurantData.restaurant.Menu;
  
 	let history = useHistory();
     const [checked, setChecked] = React.useState([1]);
@@ -177,18 +180,18 @@ function Menu({data}) {
 				<Divider />
 			</div>
             <List dense >
-            {state.menu.map((listitem) => (	      
-          <ListItem key={listitem.id} button>
+            {restaurantMenu.map((listitem) => (	      
+          <ListItem key={listitem._id} button>
             <ListItemAvatar>
               <Avatar                
                 src={logo}
               />
             </ListItemAvatar>
-            <ListItemText style={{fontWeight:"bold"}} primary={listitem.items.dishName} />
+            <ListItemText style={{fontWeight:"bold"}} primary={listitem.dishname} />
             <ListItemSecondaryAction>
             <Checkbox
                 edge="end"
-                onChange={handleToggle(listitem.id)}
+                onChange={handleToggle(listitem._id)}
                                
               />
               
@@ -255,12 +258,12 @@ function Menu({data}) {
 	);
 }
 
-// const mapStateToProps = (state) => {
-//     return {
-//         firstname: state.profile.firstname,
-//         zipcode :  state.profile.zipcode
-//     }
-//   }
+const mapStateToProps = (state) => {
+	const restaurantData = state.restaurant;
+	return {
+		restaurantData,
+	};
+};
 
-//export default connect(mapStateToProps, null)(UserInfo);
-export default Menu;
+export default connect(mapStateToProps, null)(Menu);
+//export default Menu;

@@ -17,8 +17,7 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import { makeStyles } from "@material-ui/styles";
 import { useHistory } from "react-router-dom";
 import cookie from 'react-cookies';
-//import { GoogleMap, LoadScript, Marker  } from '@react-google-maps/api';
-//import PropTypes from 'prop-types';
+import serverUrl from "../config.js";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -38,59 +37,11 @@ const useStyles = makeStyles((theme) => ({
 
 export function Searchbar() {
 
-	//let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
 	let history = useHistory();
 	const mapRef = useRef(null);
 	const classes = useStyles();
 
-	const defaultCenter = {
-		lat: 41.3851, lng: 2.1734
-	  }
-
-	  const locations = [
-		{
-		  name: "Location 1",
-		  location: { 
-			lat: 41.3954,
-			lng: 2.162 
-		  },
-		},
-		{
-		  name: "Location 2",
-		  location: { 
-			lat: 41.3917,
-			lng: 2.1649
-		  },
-		},
-		{
-		  name: "Location 3",
-		  location: { 
-			lat: 41.3773,
-			lng: 2.1585
-		  },
-		},
-		{
-		  name: "Location 4",
-		  location: { 
-			lat: 41.3797,
-			lng: 2.1682
-		  },
-		},
-		{
-		  name: "Location 5",
-		  location: { 
-			lat: 41.4055,
-			lng: 2.1915
-		  },
-		}
-	  ];
-	// const { ref, map, google } = useGoogleMaps('AIzaSyB_V46hZHJWMGf_UQViAlhD90sUrhY9wLc',
-	// 	{
-	// 		center: { lat: 0, lng: 0 },
-	// 		zoom: 3,
-	// 	  },
-	// 	);
+	
 	let [state, setState] = React.useState({
 		find: "",
 		where: "",
@@ -111,7 +62,7 @@ export function Searchbar() {
 
 	function handleSearch() {
 		axios
-			.get(httpURL+"/get/home", {
+			.get(serverUrl+"/get/home", {
 				params: {
 					keyword: state.find,
 					location: state.where,

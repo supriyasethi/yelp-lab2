@@ -22,14 +22,14 @@ import { useHistory } from 'react-router-dom';
             <Grid item container>
                 <Grid xs={0} sm={2}/>
                 <Grid xs={12} sm={8}>
-                    <UserInfo data={location.state.data} />
+                    <UserInfo  />
                 </Grid>
                 <Grid xs={0} sm={2}/>
             </Grid>
             <Grid item container>
                 <Grid xs={0} sm={2}/>
                 <Grid xs={12} sm={8}>
-                    <UserDetails data={location.state.data}/>
+                    <UserDetails />
                 </Grid>
                 <Grid xs={0} sm={2}/>
             </Grid>

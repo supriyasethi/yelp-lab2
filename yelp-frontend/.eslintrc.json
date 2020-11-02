@@ -20,5 +20,15 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "jsx-a11y/anchor-is-valid": "off",
+        "no-useless-escape": 0,
+        "prettier/prettier": ["error"],
+        "parser": "babel-eslint",
+        "react/jsx-filename-extension": [
+          1,
+          {
+            "extensions": [".js", ".jsx"]
+          }
+        ]
     }
 }

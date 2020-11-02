@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Divider, Button, Link } from "@material-ui/core";
-//import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import logo from "../../assets/homepage1.jpg";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import axios from "axios";
+
 
 const useStyles = makeStyles((theme) => ({
-	root: {
-		//
-		// width: '100%',
-		// maxWidth: '36ch',
+	root: {		
 		marginLeft: 100,
 		marginTop: 20,
 		width: "100%",
@@ -43,46 +40,48 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function Orders() {
+function Reviews(restaurantData) {
+	
+	let restaurantReviews = restaurantData.restaurantData.restaurant.Reviews;
 
-	//let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+	// let httpURL = "http://localhost:3001";
+	// //let httpURL = "http://54.219.75.46:3001";
     const classes = useStyles();   
 	let history = useHistory();
-	const [checked, setChecked] = React.useState([1]);
-	let [state, setState] = React.useState({
-		orders: [],
-		delieverystatus: "",
-		orderfilter: "",
-	});
+	// const [checked, setChecked] = React.useState([1]);
+	// let [state, setState] = React.useState({
+	// 	orders: [],
+	// 	delieverystatus: "",
+	// 	orderfilter: "",
+	// });
 
-	var newOrder = [];
-	const data = localStorage.getItem("restaurantId");
+	// var newOrder = [];
+	// const data = localStorage.getItem("restaurantId");
 
-	useEffect(() => {
-		console.log("data", data);
-		axios.defaults.withCredentials = true;
-		axios
-			.get(httpURL+"/get/reviews", {
-				params: {
-					restaurantId: data,
-				},
-			})
-			.then((response) => {
-                //update the state with the response data
-                console.log(response);
-				for (var i = 0; i < response.data.length; i++) {
-					var temp = response.data[i];
-					newOrder.push({
-						id: i,
-						items: temp,
-					});
-				}
-				setState({
-					orders: newOrder,
-				});
-			});
-	}, []);	
+	// useEffect(() => {
+	// 	console.log("data", data);
+	// 	axios.defaults.withCredentials = true;
+	// 	axios
+	// 		.get(httpURL+"/get/reviews", {
+	// 			params: {
+	// 				restaurantId: data,
+	// 			},
+	// 		})
+	// 		.then((response) => {
+    //             //update the state with the response data
+    //             console.log(response);
+	// 			for (var i = 0; i < response.data.length; i++) {
+	// 				var temp = response.data[i];
+	// 				newOrder.push({
+	// 					id: i,
+	// 					items: temp,
+	// 				});
+	// 			}
+	// 			setState({
+	// 				orders: newOrder,
+	// 			});
+	// 		});
+	// }, []);	
 
 	function routetoCustomer(e, id) {
 		history.push({
@@ -109,8 +108,8 @@ function Orders() {
 			</div>
 			<div className={classes.list}>
 				<List>
-					{state.orders.map((listitem) => (
-						<ListItem alignItems='flex-start' key={listitem.id}>
+					{restaurantReviews.map((listitem) => (
+						<ListItem alignItems='flex-start' key={listitem._id}>
 							<Divider />
                           
 							<ListItemText
@@ -134,12 +133,10 @@ function Orders() {
 													justifyContent: "center",
 												}}
 												onClick={(event) =>
-													routetoCustomer(event, listitem.items.userId)
+													routetoCustomer(event, listitem.userid)
 												}>
 												Customer:
-												{listitem.items.first_name +
-													" " +
-													listitem.items.last_name}
+												{listitem.username} 
 											</Link>
 											<div>
 												<Typography
@@ -151,7 +148,7 @@ function Orders() {
 													}}>
 													What does he say?:
 												</Typography>
-												{listitem.items.reviews}
+												{listitem.review}
 											</div>
 											<div>
 												<Typography
@@ -162,7 +159,7 @@ function Orders() {
 														justifyContent: "center",
 													}}>
 													How did he rate?
-                                                    {listitem.items.rating}
+                                                    {listitem.rating}
 												</Typography>
 												
 										</div>									
@@ -180,12 +177,12 @@ function Orders() {
 	);
 }
 
-// const mapStateToProps = (state) => {
-//     return {
-//         firstname: state.profile.firstname,
-//         zipcode :  state.profile.zipcode
-//     }
-//   }
+const mapStateToProps = (state) => {
+	const restaurantData = state.restaurant;
+	return {
+		restaurantData,
+	};
+};
 
-//export default connect(mapStateToProps, null)(UserInfo);
-export default Orders;
+export default connect(mapStateToProps, null)(Reviews);
+//export default Reviews;

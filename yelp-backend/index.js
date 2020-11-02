@@ -89,13 +89,13 @@ app.use("/signup", Signup);
 // //app.use(auth);
 const Update = require("./routes/Update");
 const Insert = require("./routes/Insert");
-// const Fetch = require("./routes/Fetch");
+const Fetch = require("./routes/Fetch");
 
 
 
 app.use("/update", Update);
 app.use("/insert", Insert);
-// app.use("/get", Fetch);  
+app.use("/get", Fetch);  
 
 app.post('/upload', (req, res) => {
   console.log('request', req.files);

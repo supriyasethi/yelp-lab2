@@ -6,19 +6,17 @@ function updateUser(req, res) {
 	console.log("Inside Update User Profile Post Request");
 	console.log("Req Body : ", req.body);
 	try {
-		Users.updateOne(
-			{ _id: req.params.userid },
+		Users.findOneAndUpdate(
+			{ _id: req.body.userid },
 			{
 				$set: {
 					firstname: req.body.firstname,
 					lastname: req.body.lastname,
-					dateofbirth: req.body.birthday,
-					city: req.body.city,
+					dateofbirth: req.body.birthday,					
 					state: req.body.state,
 					country: req.body.country,
 					nickname: req.body.nickname,
-					gender: req.body.gender,
-					emailid: req.body.emailid,
+					gender: req.body.gender,					
 					phonenumber: req.body.phonenumber,
 					yelpingsince: req.body.yelpingsince,
 					thingsilove: req.body.thingsilove,
@@ -46,16 +44,14 @@ function updateBiz(req, res) {
 	console.log("Inside Update Restaurant Profile Post Request");
 	console.log("Req Body : ", req.body);
 	try {
-		Restaurants.updateOne(
-			{ _id: req.params.resid },
+		Restaurants.findOneAndUpdate(
+			{ _id: req.body.restaurantId },
 			{
 				$set: {
-					name: req.body.name,
-					city: req.body.city,
+					name: req.body.name,					
 					description: req.body.description,
 					address: req.body.address,
-					timing: req.body.timing,
-					emailid: req.body.emailid,
+					timing: req.body.timing,					
 					website: req.body.website,
 					phonenumber: req.body.phonenumber,
 				},
@@ -77,61 +73,31 @@ function updateBiz(req, res) {
 	}
 }
 
-function updateOrder(req, res) {
+async function updateOrders(req, res) {
 	console.log("Inside Update Order Profile Post Request");
 	console.log("Req Body : ", req.body);
 
+	var query1 = { _id: req.body.resid, "orders._id": req.body.orderid };
+	var query2 = { _id: req.body.userid, "orders.restaurantid": req.body.resid };
+	var update = {
+		$set: {
+			"orders.$.delieverystatus": req.body.delieverystatus,
+			"orders.$.orderstatus": req.body.orderfilter,
+		},
+	};
 	try {
-		Restaurants.updateOne(
-			{ _id: req.params.resid, "orders._id": req.params.orderid },
-			{
-				$set: {
-					"orders.delieverystatus": req.body.delieverystatus,
-					"orders.orderstatus": req.body.orderstatus,
-				},
-			},
-			function (error, data) {
-				if (error) {
-					console.log("error", error);
-					res.json(500).send(error);
-				} else {
-					console.log("data", data);
-					res.status(200).json(data);
-				}
-			}
+		const restaurantPromise = await Restaurants.findOneAndUpdate(
+			query1,
+			update
 		);
+		const userPromise = await Users.findOneAndUpdate(query2, update);
+		return res.status(200).json({ restaurantPromise, userPromise });
 	} catch (error) {
-		console.log("error", error);
-		res.send(error);
-	}
-
-	try {
-		Users.updateOne(
-			{ _id: req.params.userid, "orders.restaurantid": req.params.resid },
-			{
-				$set: {
-					"orders.delieverystatus": req.body.delieverystatus,
-					"orders.orderstatus": req.body.orderstatus,
-				},
-			},
-			function (error, data) {
-				if (error) {
-					console.log("error", error);
-					res.json(500).send(error);
-				} else {
-					console.log("data", data);
-					res.status(200).json(data);
-				}
-			}
-		);
-	} catch (error) {
-		console.log("error", error);
-		res.send(error);
+		return res.status(500).json(err);
 	}
 }
-
 module.exports = {
 	updateUser,
 	updateBiz,
-	updateOrder,
+	updateOrders,
 };

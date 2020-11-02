@@ -1,113 +1,56 @@
-const Users = require('../models/User');
-const Restaurants = require('../models/Restaurant');
+const Users = require("../models/User");
+const Restaurants = require("../models/Restaurant");
+const Events = require("../models/Event");
+const UserFollows = require("../models/UserFollow");
 
-function insertEvent(req, res) {
+async function insertEvent(req, res) {
 	console.log("Inside Insert Event Post Request");
 	console.log("Req Body : ", req.body);
-	var insertevent = {
-		name: req.body.name,
-        description: req.body.description,
-        time: req.body.time,
-        date: req.body.date,
-        location: req.body.location,
-        hashtags: req.body.hashtags
-	};
-	console.log(insertevent);
-	try {
-		 Restaurants.updateOne(
-			{ _id: req.params.id },
-			{ $push: { events: insertevent }} ,{upsert: true},
-			function (error, data) {
-				if (error) {				
-					console.log("error", error);
-					res.json(500).send(error);
-				} else {					
-					console.log("data", data);
-					res.status(200).json(data);
-				}
-			}
-        );        
-	} catch (error) {
-		console.log("error", error);
-		res.send(error);
-	}
-}
 
-function userRegister(req, res) {
-	var insertuserRestaurant = {
-		userid: req.params.userid,
-        userfirstname: req.body.firstname,
-        userlastname: req.body.lastname
-	};
-	var inserteventUser = {
-		name: req.body.name,
-        description: req.body.description,
-        time: req.body.time,
-        date: req.body.date,
-        location: req.body.location,
-        hashtags: req.body.hashtags
-	};
-	console.log(insertuserRestaurant);
-	try {
-		 Restaurants.updateOne(
-			{ _id: req.params.resid , 'events.name': req.body.eventname},
-			{ $push: { usersregistered: insertuserRestaurant }} ,{upsert: true},
-			function (error, data) {
-				if (error) {					
-					console.log("error", error);
-					res.json(500).send(error);
-				} else {					
-					console.log("data", data);
-					res.status(200).json(data);
-				}
-			}
-        );        
-	} catch (error) {
-		console.log("error", error);
-		res.send(error);
-	}
-
-	try {
-		Users.updateOne(
-		   { _id: req.params.userid},
-		   { $push: { events: inserteventUser }} ,{upsert: true},
-		   function (error, data) {
-			   if (error) {					
-				   console.log("error", error);
-				   res.json(500).send(error);
-			   } else {					
-				   console.log("data", data);
-				   res.status(200).json(data);
-			   }
-		   }
-	   );        
-   } catch (error) {
-	   console.log("error", error);
-	   res.send(error);
-   }
-}
-
-function insertMenu(req, res) {
-	console.log("Inside Insert Menu Post Request");
-	console.log("Req Body : ", req.body);
-	
-	var insertmenu = {
-		dishname: req.body.dishname,
-		ingredients: req.body.ingredients,
-		price: req.body.price,
+	const eventdata = new Events({
+		name: req.body.eventname,
 		description: req.body.description,
-		category: req.body.category,
-	};
-	console.log(insertmenu);
+		time: req.body.time,
+		date: req.body.date,
+		location: req.body.location,
+		hashtags: req.body.hashtags,
+		restaurantId: req.body.resid,
+	});
+
 	try {
-		 Restaurants.updateOne(
-			{ _id: req.params.id },
-			{ $push: { menu: insertmenu } },
+		await eventdata.save((error, data) => {
+			if (error) {
+				console.log("error", error);
+				res.json(500).send(error);
+			} else {
+				console.log("data", data);
+				res.status(200).json(data);
+			}
+		});
+	} catch (err) {
+		res.json({ message: err });
+	}
+}
+
+async function userRegister(req, res) {
+	var insertUserRegister = {
+		userid: req.query.userid,
+		userfirstname: req.body.firstname,
+		userlastname: req.body.lastname,
+	};
+	var inserteventUser;
+
+	console.log(insertUserRegister);
+	try {
+		await Events.findOneAndUpdate(
+			{ _id: req.body.eventid },
+			{ $addToSet: { usersregistered: insertUserRegister } },
+			{ upsert: true },
 			function (error, data) {
-				if (error) {					
+				if (error) {
 					console.log("error", error);
 					res.json(500).send(error);
-				} else {					
+				} else {
 					console.log("data", data);
 					res.status(200).json(data);
 				}
@@ -119,65 +62,122 @@ function insertMenu(req, res) {
 	}
 }
 
-function insertReview(req, res) {
-	console.log("Inside Insert Reviews Post Request");
-	console.log(req.body);
-	var insertreviewRestaurant = {
-		userid: req.params.userid,
-		review: req.body.review,
-		rating: req.body.rating		
-	};
+async function userFollow(req, res) {
+	const userfollowdata = new UserFollows({
+		userid: req.body.userid,
+		firstname: req.body.firstname,
+		lastname: req.body.lastname,
+		city: req.body.city,
+		state: req.body.state,
+		yelpingsince: req.body.yelpingsince,
+		thingsilove: req.body.thingsilove,
+		findmein: req.body.findmein,
+	});
 
-	var insertreviewUser = {
-		restaurantid: req.params.resid,
-		review: req.body.review,
-		rating: req.body.rating		
-	};
-	console.log(insertreviewRestaurant);
 	try {
-		 Restaurants.updateOne(
-			{ _id: req.params.resid },
-			{ $push: { reviews: insertreviewRestaurant }} ,{upsert: true},
+		await UserFollows.findOne({ userid: req.body.userid }, (error, user) => {
+			if (error) {
+				res.status(500).end();
+			}
+			if (user) {
+				res
+					.status(200)
+					.json({ message: "You are already following this user!" });
+			} else {
+				userfollowdata.save((error, data) => {
+					if (error) {
+						console.log("error", error);
+						res.json(500).send(error);
+					} else {
+						console.log("data", data);
+						res.status(200).json({ message: "You are now following this user!" });
+					}
+				});
+			}
+		});
+	} catch (err) {
+		res.json({ message: err });
+	}
+}
+
+async function insertMenu(req, res) {
+	console.log("Inside Insert Menu Post Request");
+	console.log("Req Body : ", req.body);
+	console.log("Req Query : ", req.query);
+
+	var insertmenu = {
+		dishname: req.body.dishname,
+		ingredients: req.body.ingredients,
+		price: req.body.price,
+		description: req.body.description,
+		category: req.body.category,
+	};
+	console.log(insertmenu);
+	try {
+		await Restaurants.findOneAndUpdate(
+			{ _id: req.body.resId },
+			{ $addToSet: { menu: insertmenu } },
 			function (error, data) {
-				if (error) {					
+				if (error) {
 					console.log("error", error);
 					res.json(500).send(error);
-				} else {					
+				} else {
 					console.log("data", data);
 					res.status(200).json(data);
 				}
 			}
-        );        
+		);
 	} catch (error) {
 		console.log("error", error);
 		res.send(error);
 	}
-	try {
-		Users.updateOne(
-		   { _id: req.params.userid },
-		   { $push: { reviews: insertreviewUser }} ,{upsert: true},
-		   function (error, data) {
-			   if (error) {					
-				   console.log("error", error);
-				   res.json(500).send(error);
-			   } else {					
-				   console.log("data", data);
-				   res.status(200).json(data);
-			   }
-		   }
-	   );        
-   } catch (error) {
-	   console.log("error", error);
-	   res.send(error);
-   }
 }
 
-function insertOrder(req, res) {
+async function insertReview(req, res) {
+	console.log("Inside Insert Reviews Post Request");
+	console.log(req.body);
+	var insertreviewRestaurant = {
+		userid: req.body.userid,
+		username: req.body.username,
+		review: req.body.review,
+		rating: req.body.rating,
+	};
+
+	var insertreviewUser = {
+		restaurantid: req.body.resid,
+		review: req.body.review,
+		rating: req.body.rating,
+	};
+	console.log(insertreviewRestaurant);
+	var query1 = { _id: req.body.resid };
+	var query2 = { _id: req.body.userid };
+	var update1 = {
+		$addToSet: { reviews: insertreviewRestaurant },
+	};
+	var update2 = {
+		$addToSet: { reviews: insertreviewUser },
+	};
+	var options = { safe: true, upsert: true };
+	try {
+		const restaurantPromise = await Restaurants.findOneAndUpdate(
+			query1,
+			update1,
+			options
+		);
+		const userPromise = await Users.findOneAndUpdate(query2, update2, options);
+		return res.status(200).json({ restaurantPromise, userPromise });
+	} catch (error) {
+		return res.status(500).json(err);
+	}
+}
+
+async function insertOrder(req, res) {
 	console.log("Inside Insert Order Post Request");
 	console.log(req.body);
-	
+
 	var insertorderRestaurant = {
-		userid: req.params.userid,
+		userid: req.query.userid,
+		username: req.query.username,
 		orderitem: req.body.orderitem,
 		delieveryoption: req.body.delieveryoption,
 		delieverystatus: req.body.delieverystatus,
@@ -185,50 +185,34 @@ function insertOrder(req, res) {
 	};
 
 	var insertorderUser = {
-		restaurantid: req.params.resid,
+		restaurantid: req.query.resid,
+		restaurantname: req.query.restaurantname,
 		orderitem: req.body.orderitem,
 		delieveryoption: req.body.delieveryoption,
 		delieverystatus: req.body.delieverystatus,
 		orderstatus: req.body.orderstatus,
 	};
 	console.log(insertorderRestaurant);
+	var query1 = { _id: req.body.resid };
+	var query2 = { _id: req.body.userid };
+	var update1 = {
+		$addToSet: { orders: insertorderRestaurant },
+	};
+	var update2 = {
+		$addToSet: { orders: insertorderUser },
+	};
+	var options = { safe: true, upsert: true };
 	try {
-		 Restaurants.updateOne(
-			{ _id: req.params.resid },
-			{ $push: { orders: insertorderRestaurant } },
-			function (error, data) {
-				if (error) {					
-					console.log("error", error);
-					res.json(500).send(error);
-				} else {					
-					console.log("data", data);
-					res.status(200).json(data);
-				}
-			}
-        );        
+		const restaurantPromise = await Restaurants.findOneAndUpdate(
+			query1,
+			update1,
+			options
+		);
+		const userPromise = await Users.findOneAndUpdate(query2, update2, options);
+		return res.status(200).json({ restaurantPromise, userPromise });
 	} catch (error) {
-		console.log("error", error);
-		res.send(error);
+		return res.status(500).json(err);
 	}
-
-	try {
-		Users.updateOne(
-		   { _id: req.params.resid },
-		   { $push: { orders: insertorderUser } },
-		   function (error, data) {
-			   if (error) {					
-				   console.log("error", error);
-				   res.json(500).send(error);
-			   } else {					
-				   console.log("data", data);
-				   res.status(200).json(data);
-			   }
-		   }
-	   );        
-   } catch (error) {
-	   console.log("error", error);
-	   res.send(error);
-   }
 }
 
 module.exports = {
@@ -237,4 +221,5 @@ module.exports = {
 	userRegister,
 	insertReview,
 	insertOrder,
+	userFollow,
 };

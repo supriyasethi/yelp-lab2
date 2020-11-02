@@ -4,15 +4,17 @@ const jwt = require('jsonwebtoken');
 const { secret } = require('../utils/config');
 const { auth } = require("../utils/passport");
 var passwordHash = require('password-hash');
+const Users = require('../models/User');
+const Restaurants = require('../models/Restaurant');
 auth();
 
-function loginUser(req,res) {
+async function loginUser(req,res) {
     console.log("Inside Login Post Request");  
-  console.log("Req Body : ",req.body);  
+  console.log("Req Body : ",req.body);    
   try {
-		const user = Users.findOne({ "login.username": req.body.username});		
+		const user = await Users.findOne({ "login.username": req.body.username});		
 		if(passwordHash.verify(req.body.password, user.login.password)) {              			
-			const payload = { _id: user._id, username: user.login.username};			
+			const payload = { _id: user._id, username: user.login.username, firstname: user.firstname, lastname: user.lastname};			
             const token = jwt.sign(payload, secret, {
                 expiresIn: 1008000
 			});
@@ -26,11 +28,11 @@ function loginUser(req,res) {
 
 }
 
-function loginBiz(req,res) {
+async function loginBiz(req,res) {
     console.log("Inside Login Post Request");  
   console.log("Req Body : ",req.body);  
   try {
-		const biz = Restaurants.findOne({ "login.username": req.body.username});
+		const biz = await Restaurants.findOne({ "login.username": req.body.username});
 		console.log(biz);
 		if(passwordHash.verify(req.body.password, biz.login.password)) {			           
 			const payload = { _id: biz._id, username: biz.login.username};			
@@ -41,7 +43,8 @@ function loginBiz(req,res) {
 		}
 		else res.status(401).json({message: "Invalid Credentials"});
 	}	
-	catch(error) {				
+	catch(error) {		
+		console.log(error);
 		res.status(500).json({message:"Error Occured"});
 	}  
 }

@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
-import { Typography, Divider, Avatar, Link, Button, TextField } from "@material-ui/core";
+import {
+	Typography,
+	Divider,
+	Avatar,
+	Link,
+	Button,
+	TextField,
+} from "@material-ui/core";
 //import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import logo from "../../assets/homepage1.jpg";
@@ -9,156 +16,194 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import axios from "axios";
-import Cookies from 'js-cookie';
-import cookie from 'react-cookies';
+import Cookies from "js-cookie";
+import cookie from "react-cookies";
+import serverUrl from "../../config.js";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		width: 500,		
+		width: 500,
 	},
 	inline: {
 		display: "inline",
 	},
 	input: {
 		width: "200px",
-		height: "5px"
-	}
+		height: "5px",
+	},
 }));
 
-function EventsList({data}) {
-	
-	let history = useHistory();	
+function EventsList({ data }) {
+	let history = useHistory();
 	let [eventmsg, seteventmsg] = useState();
 	let [searchkey, setsearchkey] = useState();
 	let [state, setState] = React.useState({
 		events: [],
+		sortFlag: false,
 	});
-
-	
 
 	useEffect(() => {
 		var newEvent = [];
 		axios.defaults.withCredentials = true;
-		//axios.get("http://54.219.75.46:3001/get/event").then((response) => {
-		axios.get("http://localhost:3001/get/event").then((response) => {
-			//update the state with the response data
-			for (var i = 0; i < response.data.length; i++) {
-				var temp = response.data[i];
-				newEvent.push({
-					id: i,
-					items: temp,
-				});
-			}
-			setState({
-				events: newEvent,
+		axios
+			.get(serverUrl + "get/events")
+			.then((response) => {
+				if (response.status === 200) {
+					setState({
+						authFlag: true,
+						events: response.data,
+					});
+				}
+				console.log("events array", state.events);
+			})
+			.catch((error) => {
+				console.log(error);
 			});
-		});
-    }, []);
-	
+	}, []);
+
 	function handleSearchChange(e) {
 		setsearchkey(e.target.value);
 	}
 	function handleSearchEvent() {
 		var newEvent = [];
-		axios.defaults.withCredentials = true;
-		//axios.get("http://54.219.75.46:3001/get/eventkey", {
-		axios.get("http://localhost:3001/get/eventkey", {
-			params: {
-				key: searchkey
-			}
-		}).then((response) => {
-			//update the state with the response data
-			for (var i = 0; i < response.data.length; i++) {
-				var temp = response.data[i];
-				newEvent.push({
-					id: i,
-					items: temp,
+		axios.defaults.withCredentials = true;		
+		axios
+			.get(serverUrl + "get/eventkey", {
+				params: {
+					key: searchkey,
+				},
+			})
+			.then((response) => {
+				//update the state with the response data
+				setState({
+					authFlag: true,
+					events: response.data,
 				});
-			}
-			setState({
-				events: newEvent,
 			});
-		});
 	}
-    function handleRegister(e, id) {  
-		console.log('event Id', state.events[id].items.eventId);
-		console.log('res Id', state.events[id].items.restaurantId);
-		//console.log('user Id', data);
-		console.log('cookie',Cookies.get("cookie"));
-		//console.log(Cookies);
-		let user = localStorage.getItem('userId');
-		var postInfo =  {
-			eventId : state.events[id].items.eventId,
-			restaurantId : state.events[id].items.restaurantId,
-			userId: user
-		}
-		if (cookie.load('cookie')) {
-			axios.defaults.withCredentials = true;
-			//axios.post("http://54.219.75.46:3001/insert/eventregister", postInfo).then((response) => {
-			axios.post("http://localhost:3001/insert/eventregister", postInfo).then((response) => {
-				if(response.status === 200) {                					
-					if (cookie.load('cookie')) {
-						console.log(response.data);
-						seteventmsg(<p>{response.data}</p>);
-							//redirectVar = <Redirect to= "/home"/>
-						}
-					 }
-			//update the state with the response data
-			console.log(response);			
+	function handleRegister(e, id) {
+		let userid = localStorage.getItem("user_id");
+		let firstname = localStorage.getItem("userfirstname");
+		let lastname = localStorage.getItem("userlastname");
+		var postInfo = {
+			eventid: id,
+			firstname: firstname,
+			lastname: lastname,
+			userid: userid,
+		};
+		axios.defaults.withCredentials = true;
+		axios.post(serverUrl + "insert/userregister", postInfo).then((response) => {
+			if (response.status === 200) {
+				console.log(response.data);
+				seteventmsg(<p>Event Registered!</p>);
+			}
 		});
 	}
 
-        	// history.push({ 
-			// 	pathname: '/eventsregister',
-			// 	state: {data: state.events[id]}}); 
-		// }
-		else {
-			history.push('/login');
-		}
-			
+	function handleSortAsc() {
+		setState({
+			events: state.events.sort((a, b) =>
+				a.date
+					.split("/")
+					.reverse()
+					.join()
+					.localeCompare(b.date.split("/").reverse().join())
+			),
+			sortFlag: true,
+		});
+	}
+	function handleSortDesc() {
+		setState({
+			events: state.events.sort((b, a) =>
+				a.date
+					.split("/")
+					.reverse()
+					.join()
+					.localeCompare(b.date.split("/").reverse().join())
+			),
+			sortFlag: true,
+		});
 	}
 
 	const classes = useStyles();
 
 	return (
 		<div className={classes.root}>
+			<div>{eventmsg}</div>
 			<div>
-			{eventmsg}
+				<TextField
+					className={`input is-medium ${classes.input}`}
+					id='outlined-basic'
+					placeholder='Events'
+					variant='outlined'
+					size='medium'
+					type='text'
+					name='searchkey'
+					value={state.searchkey}
+					style={{
+						height: "35px",
+					}}
+					onChange={handleSearchChange}
+				/>
+				<Button
+					variant='contained'
+					color='secondary'
+					style={{
+						height: "55px",
+						width: "100px",
+						fontSize: "12px",
+						fontWeight: "bold",
+						background: "#d32323",
+					}}
+					onClick={handleSearchEvent}>
+					Search
+				</Button>
 			</div>
 			<div>
-			<TextField
-						className={`input is-medium ${classes.input}`}
-						id='outlined-basic'
-						placeholder='Events'
-						variant='outlined'
-						size='medium'
-						type='text'
-						name='searchkey'
-						value={state.searchkey}
-						style={{ 
-							height: "35px", 
-							}}
-						onChange={handleSearchChange}
-					/>
-			<Button variant="contained" color="secondary" style={{ 
-                height: "55px", 
-                width: "100px", 
-                fontSize : '12px',
-                fontWeight : "bold",
-                background: "#d32323"}} onClick={handleSearchEvent} >
-                Search
-            </Button>
-			</div>	
-			
+				<Button
+					variant='contained'
+					color='secondary'
+					style={{
+						height: "40px",
+						width: "100px",
+						fontSize: "12px",
+						fontWeight: "bold",
+						color: "#d32323",
+						background: "white",
+						borderColor: "#d32323",
+						marginTop: "10px",
+						marginLeft: "10px",
+					}}
+					onClick={handleSortAsc}>
+					SortbyDate Asc
+				</Button>
+				<Button
+					variant='contained'
+					color='secondary'
+					style={{
+						height: "40px",
+						width: "100px",
+						fontSize: "12px",
+						fontWeight: "bold",
+						color: "#d32323",
+						background: "white",
+						borderColor: "#d32323",
+						marginTop: "10px",
+						marginLeft: "10px",
+					}}
+					onClick={handleSortDesc}>
+					SortbyDate Desc
+				</Button>
+			</div>
 			<List>
 				{state.events.map((listitem) => (
-					<ListItem alignItems='flex-start' key={listitem.id}>
+					<ListItem alignItems='flex-start' key={listitem._id}>
 						<Divider />
 						<ListItemAvatar>
 							<Avatar alt='Remy Sharp' src={logo} />
 						</ListItemAvatar>
 						<ListItemText
-							primary={listitem.items.name}
+							primary={listitem.name}
 							secondary={
 								<React.Fragment>
 									<div>
@@ -169,7 +214,7 @@ function EventsList({data}) {
 											color='textPrimary'>
 											Timing:
 										</Typography>
-										{listitem.items.time}
+										{listitem.time}
 										<Typography
 											component='span'
 											variant='body2'
@@ -177,7 +222,7 @@ function EventsList({data}) {
 											color='textPrimary'>
 											Date:
 										</Typography>
-										{listitem.items.date}
+										{listitem.date}
 									</div>
 									<div>
 										<Typography
@@ -187,17 +232,17 @@ function EventsList({data}) {
 											color='textPrimary'>
 											Location:
 										</Typography>
-										{listitem.items.location}
+										{listitem.location}
 									</div>
 									<div>
 										<Link
 											component='button'
 											variant='body2'
-											style={{												
+											style={{
 												fontSize: "14px",
 												fontWeight: "bold",
 											}}
-											onClick={(event) => handleRegister(event, listitem.id)}>
+											onClick={(event) => handleRegister(event, listitem._id)}>
 											Register
 										</Link>
 									</div>
@@ -207,7 +252,6 @@ function EventsList({data}) {
 					</ListItem>
 				))}
 			</List>
-			
 		</div>
 	);
 }

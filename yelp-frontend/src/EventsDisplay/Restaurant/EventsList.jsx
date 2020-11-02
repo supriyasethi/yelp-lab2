@@ -1,101 +1,70 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
-import { Typography, Divider, Avatar, Link } from "@material-ui/core";
-//import { connect, useDispatch } from "react-redux";
+import { Typography, Divider, Avatar, Link, Button } from "@material-ui/core";
+import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import logo from "../../assets/homepage1.jpg";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import serverUrl from "../../config.js";
 import axios from "axios";
-import Cookies from 'js-cookie';
-import cookie from 'react-cookies';
+
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		width: 500,		
+		width: 500,
 	},
 	inline: {
 		display: "inline",
 	},
 }));
 
-function EventsList() {
-
-	//let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
-	let history = useHistory();
-
+function EventsList(restaurantData) {	
+	
 	let [state, setState] = React.useState({
 		events: [],
-	});
-
-	var newEvent = [];
-	var prevevent = "";
+		authFlag: false
+	});	
 	var res = "";
 
 	useEffect(() => {
 		
-		res = localStorage.getItem('restaurantId');
+		res = localStorage.getItem('restaurant_id');
         axios.defaults.withCredentials = true;
-		axios.get(httpURL+"/get/events",{
+		axios.get(serverUrl+"get/event",{
             params: {
                 restaurantId: res }
             })
         .then((response) => {
-            //update the state with the response data
-            console.log(response);
-			for (var i = 0; i < response.data.length; i++) {
-				if(prevevent !== response.data[i].name) {
-					var temp = response.data[i];
-					newEvent.push({
-						id: i,
-						items: temp,
-						username: (response.data[i].first_name + " " +response.data[i].last_name)
-					});
-					prevevent = response.data[i].name;										
-				}				
-			}
-			console.log('newEvent', newEvent);
-			setState({
-				events: newEvent,
-			});
-		});
-    }, []);
+            //update the state with the response data			
+			if (response.status === 200) {		
+				setState({
+					authFlag: true,
+					events: response.data
+				})
+			}			
+		})
+		.catch((error) => {
+			console.log(error);
+		})
+	}, []);
 	
-	
-    function handleUserProfile(e, id) {  
-	// 	console.log('events', state.events[id]);
-		const userid = state.events[id].items.userId
-		 console.log('events', state.events[id].items.userId);
-		 //localStorage.setItem('userId', state.events[id].items.userId);
-		 history.push({
-			 pathname: '/userdisplay',
-			 state: {data: userid}});
-	// 	console.log('cookie',Cookies.get("cookie"));
-	// 	//console.log(Cookies);
-	// 	var postInfo =  {
-	// 		eventId : state.events[id].items.eventId,
-	// 		restaurantId : state.events[id].items.restaurantId,
-	// 	}
-	// 	if (cookie.load('cookie')) {
-	// 		axios.post("http://localhost:3001/insert/eventregister", postInfo).then((response) => {
-	// 		//update the state with the response data
-	// 		console.log(response);			
-	// 	});
-	// }
-
-    //     	// history.push({ 
-	// 		// 	pathname: '/eventsregister',
-	// 		// 	state: {data: state.events[id]}}); 
-	// 	// }
-	// 	else {
-	// 		history.push('/login');
-	// 	}
-			
+	function handleSortAsc() {		
+		setState ({
+			events: state.events.sort((a, b) =>
+			a.date.split('/').reverse().join().localeCompare(b.date.split('/').reverse().join())),
+			sortFlag: true
+		})
 	}
-
+	function handleSortDesc() {		
+		setState ({
+			events:state.events.sort((b, a) =>
+			a.date.split('/').reverse().join().localeCompare(b.date.split('/').reverse().join())),
+			sortFlag: true
+		})
+	}
 	const classes = useStyles();
 
 	return (
@@ -114,15 +83,51 @@ function EventsList() {
 			<div>
 				<Divider />
 			</div>
+			<div>
+				<Button
+					variant='contained'
+					color='secondary'
+					style={{
+						height: "40px",
+						width: "100px",
+						fontSize: "12px",
+						fontWeight: "bold",
+						color: "#d32323",
+						background: "white",
+						borderColor: "#d32323",
+						marginTop: "10px",
+						marginLeft: "10px",
+					}}
+					onClick={handleSortAsc}>
+					SortbyDate Asc
+				</Button>
+				<Button
+					variant='contained'
+					color='secondary'
+					style={{
+						height: "40px",
+						width: "100px",
+						fontSize: "12px",
+						fontWeight: "bold",
+						color: "#d32323",
+						background: "white",
+						borderColor: "#d32323",
+						marginTop: "10px",
+						marginLeft: "10px",
+					}}
+					onClick={handleSortDesc}>
+					SortbyDate Desc
+				</Button>
+			</div>
 
 			<List>
 				{state.events.map((listitem) => (
-					<ListItem alignItems='flex-start' key={listitem.id}>
+					<ListItem alignItems='flex-start' key={listitem._id}>
 						<ListItemAvatar>
 							<Avatar alt='Remy Sharp' src={logo} />
 						</ListItemAvatar>
 						<ListItemText
-							primary={listitem.items.name}
+							primary={listitem.name}
 							secondary={
 								<React.Fragment>
 									<div>
@@ -133,7 +138,7 @@ function EventsList() {
 											color='textPrimary'>
 											Timing:
 										</Typography>
-										{listitem.items.time}
+										{listitem.time}
 										<Typography
 											component='span'
 											variant='body2'
@@ -141,7 +146,7 @@ function EventsList() {
 											color='textPrimary'>
 											Date:
 										</Typography>
-										{listitem.items.date}
+										{listitem.date}
 									</div>
 									<div>
 										<Typography
@@ -151,27 +156,19 @@ function EventsList() {
 											color='textPrimary'>
 											Location:
 										</Typography>
-										{listitem.items.location}
+										{listitem.location}
 									</div>
 									<div>
+									{listitem.usersregistered.length > 0 ?
+									listitem.usersregistered.map((list) => (
 										<Typography
 											component='span'
 											variant='body2'
 											className={classes.inline}
 											color='textPrimary'>
-											User Registered:
-										</Typography>							
-									
-										<Link
-											component='button'
-											variant='body2'
-											style={{												
-												fontSize: "14px",
-												fontWeight: "bold",
-											}}
-											onClick={(event) => handleUserProfile(event, listitem.id)}>
-											{listitem.username}
-										</Link>
+											User Registered:{list.userfirstname} {list.userlastname} 
+										</Typography>
+										)) : 'No User Registered'}
 									</div>
 								</React.Fragment>
 							}
@@ -184,12 +181,12 @@ function EventsList() {
 	);
 }
 
-// const mapStateToProps = (state) => {
-//     return {
-//         firstname: state.profile.firstname,
-//         zipcode :  state.profile.zipcode
-//     }
-//   }
+const mapStateToProps = (state) => {
+	const restaurantData = state.restaurant;
+	return {
+		restaurantData,
+	};
+};
 
-//export default connect(mapStateToProps, null)(UserInfo);
-export default EventsList;
+export default connect(mapStateToProps, null)(EventsList);
+//export default EventsList;

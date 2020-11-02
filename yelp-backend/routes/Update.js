@@ -13,14 +13,14 @@ router.post("/userprofile", async (req, res) => {
 //Route to handle Post Update biz profile Request Call
 router.post("/bizprofile", async (req, res) => {
 	console.log("Inside update user profile route");
-	const value = await updateBiz(req, res);
+	const value = await updateBiz(req, res);	
 	return value;
 });
 
 //Route to handle Post Update orders Request Call
 router.post("/orders", async (req, res) => {
 	console.log("Inside update user profile route");
-	const value = await updateOrders(req, res);
+	const value = await updateOrders(req, res);	
 	return value;
 });
 

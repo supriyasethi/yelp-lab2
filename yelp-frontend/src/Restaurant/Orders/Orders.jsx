@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Divider, Button, Link } from "@material-ui/core";
-//import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
+import { updateRestaurantProfile } from "../../js/actionconstants/action-types";
+import { getProfile } from "../../js/actions/restaurantActions";
 import { useHistory } from "react-router-dom";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import serverUrl from "../../config.js";
 import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		//
-		// width: '100%',
-		// maxWidth: '36ch',
 		marginLeft: 100,
 		marginTop: 20,
 		width: "100%",
@@ -42,72 +42,83 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function Orders() {
-	
+function Orders(restaurantData) {
+	const dispatch = useDispatch();
 	let history = useHistory();
-	//const [checked, setChecked] = React.useState([1]);
+
 	let [state, setState] = React.useState({
 		orders: [],
 		delieverystatus: "",
 		orderfilter: "",
 	});
+	let restaurantOrders = restaurantData.restaurantData.restaurant.Orders;
 
-	
-	
-	useEffect(() => {
-		
-		var newOrder = [];
-		const data = localStorage.getItem("restaurantId");
-		console.log("data", data);
-		axios.defaults.withCredentials = true;
-		//axios.get("http://54.219.75.46:3001/get/orders", {
-		axios.get("http://localhost:3001/get/orders", {
-				params: {
-					restaurantId: data,
-				},
-			})
-			.then((response) => {
-				//update the state with the response data
-				for (var i = 0; i < response.data.length; i++) {
-					var temp = response.data[i];
-					newOrder.push({
-						id: i,
-						items: temp,
-					});
-				}
-				setState({
-					orders: newOrder,
-				});
-			});
-	}, []);
+	console.log("restaurant orders", restaurantOrders);
+
+	// useEffect(() => {
+
+	// 	var newOrder = [];
+	// 	const data = localStorage.getItem("restaurantId");
+	// 	console.log("data", data);
+	// 	axios.defaults.withCredentials = true;
+	// 	//axios.get("http://54.219.75.46:3001/get/orders", {
+	// 	axios.get("http://localhost:3001/get/orders", {
+	// 			params: {
+	// 				restaurantId: data,
+	// 			},
+	// 		})
+	// 		.then((response) => {
+	// 			//update the state with the response data
+	// 			for (var i = 0; i < response.data.length; i++) {
+	// 				var temp = response.data[i];
+	// 				newOrder.push({
+	// 					id: i,
+	// 					items: temp,
+	// 				});
+	// 			}
+	// 			setState({
+	// 				orders: newOrder,
+	// 			});
+	// 		});
+	// }, []);
 
 	const classes = useStyles();
 	let [msg, setmsg] = useState("");
-	
+
 	const handleChange1 = (value) => {
-        console.log('value', value);
+		console.log("value", value);
 		setState({ ...state, delieverystatus: value });
-    };
-    
-    const handleChange2 = (value) => {
-		setState({ ...state, orderfilter: value });
 	};
 
-	function handleOrderUpdate(orderid, resId) {
+	const handleChange2 = (value) => {
+		setState({ ...state, orderfilter: value });
+	};
+	let resid = localStorage.getItem("restaurant_id");
+	function handleOrderUpdate(orderid, userid) {
 		let orderInfo = {
-			delieveryStatus: state.delieverystatus,
-			orderFilter: state.orderfilter,
-			orderId: orderid,
-			restaurantId: resId,
+			delieverystatus: state.delieverystatus,
+			orderfilter: state.orderfilter,
+			orderid: orderid,
+			resid: resid,
+			userid: userid,
 		};
-        console.log('orderinfo', orderInfo);
-		axios.defaults.withCredentials = true;		
+		console.log("orderinfo", orderInfo);
+		axios.defaults.withCredentials = true;
 		//axios.post("http://54.219.75.46:3001/update/order", orderInfo)
-		axios.post("http://localhost:3001/update/order", orderInfo)
+		axios
+			.post(serverUrl + "update/orders", orderInfo)
 			.then((response) => {
 				console.log("Status code: ", response.status);
 				if (response.status === 200) {
 					setmsg(<p>Order Updated</p>);
+					for (var i = 0; i < restaurantData.length; i++) {
+						if (restaurantData.Orders[i]._id === orderid) {
+							restaurantData.Orders[i].delieverystatus = state.delieverystatus;
+							restaurantData.Orders[i].orderfilter = state.orderfilter;
+						}
+					}
+					let payload = restaurantData;
+					dispatch(getProfile(payload));
 					history.push("/bizp");
 				}
 			})
@@ -142,8 +153,8 @@ function Orders() {
 			</div>
 			<div className={classes.list}>
 				<List>
-					{state.orders.map((listitem) => (
-						<ListItem alignItems='flex-start' key={listitem.id}>
+					{restaurantOrders.map((listitem) => (
+						<ListItem alignItems='flex-start' key={listitem._id}>
 							<Divider />
 							<ListItemText
 								style={{
@@ -152,7 +163,7 @@ function Orders() {
 									fontSize: "13px",
 									justifyContent: "center",
 								}}
-								primary={listitem.items.orderItem}
+								primary={listitem.orderitem}
 								secondary={
 									<React.Fragment>
 										<div>
@@ -166,12 +177,9 @@ function Orders() {
 													justifyContent: "center",
 												}}
 												onClick={(event) =>
-													routetoCustomer(event, listitem.items.userId)
+													routetoCustomer(event, listitem.userid)
 												}>
-												Customer:{" "}
-												{listitem.items.first_name +
-													" " +
-													listitem.items.last_name}
+												Customer: {listitem.username}
 											</Link>
 											<div>
 												<Typography
@@ -183,7 +191,7 @@ function Orders() {
 													}}>
 													Delievery Option:
 												</Typography>
-												{listitem.items.delieveryOption}
+												{listitem.delieveryoption}
 											</div>
 											<label>
 												<Typography
@@ -197,7 +205,9 @@ function Orders() {
 												</Typography>
 												<select
 													value={state.delieveryOption}
-													onChange={(event) => handleChange1(event.target.value)}>
+													onChange={(event) =>
+														handleChange1(event.target.value)
+													}>
 													<option value='On the Way'>On the Way</option>
 													<option value='Delievered'>Delievered</option>
 													<option value='Pick Up Ready'>Pick Up Ready</option>
@@ -218,23 +228,20 @@ function Orders() {
 												</Typography>
 												<select
 													value={state.orderFilter}
-													onChange={(event) => handleChange2(event.target.value)}>
+													onChange={(event) =>
+														handleChange2(event.target.value)
+													}>
 													<option value='New Orders'>New Orders</option>
 													<option value='Preparing'>Preparing</option>
-													<option value='Delievered Order'>Delievered Order</option>
-													<option value='Cancelled Order'>Cancelled Order</option>
+													<option value='Delievered Order'>
+														Delievered Order
+													</option>
+													<option value='Cancelled Order'>
+														Cancelled Order
+													</option>
 												</select>
 											</label>
 										</div>
-										<Typography
-											style={{
-												color: "#d32323",
-												fontWeight: "bold",
-												fontSize: "20px",
-												justifyContent: "center",
-											}}>
-											{listitem.items.name}
-										</Typography>
 										<div>
 											<Button
 												variant='contained'
@@ -247,10 +254,7 @@ function Orders() {
 													background: "#d32323",
 												}}
 												onClick={(event) =>
-													handleOrderUpdate(
-														listitem.items.orderId,
-														listitem.items.restaurantId
-													)
+													handleOrderUpdate(listitem._id, listitem.userid)
 												}>
 												Update Order
 											</Button>
@@ -268,12 +272,24 @@ function Orders() {
 	);
 }
 
-// const mapStateToProps = (state) => {
-//     return {
-//         firstname: state.profile.firstname,
-//         zipcode :  state.profile.zipcode
-//     }
-//   }
+const mapStateToProps = (state) => {
+	const restaurantData = state.restaurant;
+	return {
+		restaurantData,
+	};
+};
 
-//export default connect(mapStateToProps, null)(UserInfo);
-export default Orders;
+const mapDispatchToProps = (dispatch) => {
+	return {
+		getProfile: (payload) => {
+			dispatch(
+				getProfile({
+					type: updateRestaurantProfile,
+					payload,
+				})
+			);
+		},
+	};
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Orders);
+//export default Orders;

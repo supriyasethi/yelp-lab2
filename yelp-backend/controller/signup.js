@@ -4,7 +4,7 @@ var passwordHash = require('password-hash');
 const User = require("../models/User");
 const Restaurant = require("../models/Restaurant");
 
-function signupUser(req, res){
+async function signupUser(req, res){
     console.log("Inside Signup Post Request");  
   console.log("Req Body : ",req.body);
   let hashedPassword = passwordHash.generate(req.body.login.password);	
@@ -29,7 +29,7 @@ function signupUser(req, res){
 		},
 	});
 	try {
-		User.findOne({emailid: req.body.username}, (error, user) => {
+		await User.findOne({emailid: req.body.username}, (error, user) => {
 			if(error) {
 				res.status(500).end();
 			}
@@ -41,14 +41,12 @@ function signupUser(req, res){
 					if (error) {
 						res.writeHead(500, {
 							'Content-Type': 'text/plain'
-						})
-						res.send(error);
+						}).send(error);						
 					}
 					else {
 						res.writeHead(200, {
 							'Content-Type': 'text/plain'
-						})
-						res.json(data);
+						}).json(data);						
 					}
 				})
 		}
@@ -59,7 +57,7 @@ function signupUser(req, res){
  
 }
 
-function signupBiz(req, res) {
+async function signupBiz(req, res) {
     console.log("Inside Signup Post Request");  
     console.log("Req Body : ",req.body);    
     let hashedPassword = passwordHash.generate(req.body.login.password);	
@@ -79,7 +77,7 @@ function signupBiz(req, res) {
 		},
 	});
 	try {
-		Restaurant.findOne({emailid: req.body.username}, (error, bizuser) => {
+		await Restaurant.findOne({emailid: req.body.username}, (error, bizuser) => {
 			if(error) {
 				res.status(500).end();
 			}

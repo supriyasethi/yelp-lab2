@@ -1,10 +1,11 @@
 import React from 'react';
 import HomePage from './HomePage/HomePage.js'
-import UserProfile from './User/UserProfile/ProfilePage/Profile.js'
+import UserProfile from './User/UserProfile/ProfilePage/UserProfile.js' 
+import UserList from './User/UserList/UserList.js' 
 import UserDisplay from './User/UserProfile/ProfileDisplay/Profile.js'
 import UserProfileUpdate from './User/UserProfile/ProfileUpdate/ProfileUpdate';
 import BizProfileUpdate from './Restaurant/RestaurantProfile/ProfileUpdate/ProfileUpdate.js';
-import RestaurantProfile from './Restaurant/RestaurantProfile/ProfilePage/Profile.js'
+import RestaurantProfile from './Restaurant/RestaurantProfile/ProfilePage/RestaurantProfile.js'
 import RestaurantList from './Restaurant/RestaurantList/List.js' 
 import ProfileDisplay from './Restaurant/ProfileDisplay/ProfileU.js'
 import UpdateOrder from './Restaurant/Orders/ViewOrder.js'
@@ -15,7 +16,7 @@ import HomePageA from './HomePage/HomePageA.js'
 import EventsDisplay from './EventsDisplay/User/EventsDisplay.js'
 import WriteReviews from './User/Review/WriteReview.js'
 import ViewReviews from './Restaurant/Reviews/ViewReviews.js'
-import {Switch, Route} from 'react-router-dom';
+import {Switch, Route} from 'react-router-dom';     
 import LoginUser from './User/LoginPage/LoginUser';
 import ViewOrder from './User/OrdersPage/Order.js';
 import LoginRestaurant from './Restaurant/LoginPage/LoginRestaurant';
@@ -33,6 +34,7 @@ function App() {
        <Route path="/homea" component={HomePageA}/>
        <Route path="/userp" component={UserProfile}/>
        <Route path="/userdisplay" component={UserDisplay}/>
+       <Route path="/userlist" component={UserList}/>
        <Route path="/updateuprofile" component={UserProfileUpdate}/>
        <Route path="/updatebprofile" component={BizProfileUpdate}/>
        <Route path="/bizp" component={RestaurantProfile}/>

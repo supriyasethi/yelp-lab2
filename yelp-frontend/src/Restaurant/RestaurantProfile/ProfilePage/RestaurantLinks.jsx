@@ -10,6 +10,7 @@ import StarOutlinedIcon from "@material-ui/icons/StarOutlined";
 import PhotoSizeSelectActualOutlinedIcon from "@material-ui/icons/PhotoSizeSelectActualOutlined";
 import FastfoodOutlinedIcon from "@material-ui/icons/FastfoodOutlined";
 import ListAltOutlinedIcon from "@material-ui/icons/ListAltOutlined";
+import MessageIcon from '@material-ui/icons/Message';
 import EventIcon from '@material-ui/icons/Event';
 import { useHistory } from "react-router-dom";
 
@@ -55,6 +56,10 @@ const RestaurantLinks = () => {
     }
     function handleClickHome() {
 		history.push('/bizp')
+	}
+
+	function handleFetchMessage() {
+		//history.push('/bizp')
 	}
 
 	function handleReviews() {
@@ -110,7 +115,7 @@ const RestaurantLinks = () => {
 						</ListItemIcon>
 						<ListItemText
 							classes={{ primary: classes.listItemText }}
-							primary='Update Menu'
+							primary='Add Menu'
 							onClick={updateMenu}
 						/>
 					</ListItem>
@@ -142,6 +147,16 @@ const RestaurantLinks = () => {
 							classes={{ primary: classes.listItemText }}
 							primary='Events'
 							onClick={handleFetchEvents}
+						/>
+					</ListItem>
+					<ListItem button>
+						<ListItemIcon>
+							<MessageIcon />
+						</ListItemIcon>
+						<ListItemText
+							classes={{ primary: classes.listItemText }}
+							primary='Messages'
+							onClick={handleFetchMessage}
 						/>
 					</ListItem>
 				</List>

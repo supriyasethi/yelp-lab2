@@ -12,10 +12,13 @@ import {
 	FormControl,
 	FormLabel,
 } from "@material-ui/core";
-//import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import axios from "axios";
 import ImageUploader from "react-images-upload";
 import { useHistory } from "react-router-dom";
+import serverUrl from "../../../config.js";
+import { updateUserProfile } from "../../../js/actionconstants/action-types";
+import { getUserProfile } from "../../../js/actions/userActions";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -52,25 +55,25 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function ProfileInfo() {
-	//let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+function ProfileInfo(userData) {
+	const dispatch = useDispatch();
+	let userInfo = userData.userData;
 	const [picture, setpicture] = useState();
 	const [picname, setpicname] = useState("Your Profile Photo");
 	const [uploadedFile, setUploadedFile] = useState({});
 	const [state, setState] = React.useState({
-		firstname: "",
-		lastname: "",
-		nickname: "",
-		gender: "",
-		phonenumber: "",
-		birthday: null,
-		state: "",
-		country: "",
-		thingsilove: "",
-		yelpingsince: "",
-		findmein: "",
-		userId: null,
+		firstname: userInfo.Firstname,
+		lastname: userInfo.Lastname,
+		nickname: userInfo.Nickname,
+		gender: userInfo.Gender,
+		phonenumber: userInfo.Phonenumber,
+		birthday: userInfo.Dateofbirth,
+		state: userInfo.State,
+		country: userInfo.Country,
+		thingsilove: userInfo.Thingsilove,
+		yelpingsince: userInfo.Yelpingsince,
+		findmein: userInfo.Findmein,
+		userid: null,
 	});
 
 	let history = useHistory();
@@ -82,7 +85,7 @@ function ProfileInfo() {
 
 		//setpicture(URL.createObjectURL(e.target.files[0]));
 	}
-	var user = localStorage.getItem("userId");
+	var user = localStorage.getItem("user_id");
 
 	function handleChange(e) {
 		console.log("handlechange state", state);
@@ -90,7 +93,7 @@ function ProfileInfo() {
 		setState({
 			...state,
 			[e.target.name]: value,
-			userId: user,
+			userid: user,
 		});
 	}
 	const onChange = (e) => {
@@ -98,45 +101,53 @@ function ProfileInfo() {
 		setpicname(e.target.files[0].name);
 	};
 
-	const uploadPicture = async e => {
-		const data = new FormData();
-    data.append("image", picture);
-    e.preventDefault();
-    axios.defaults.withCredentials = true;
-    try{
-      const res = await axios.post(httpURL+"/upload", data, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-      });
-      console.log('res', res.data.filePath);
-      const { fileName, filePath } = res.data;
-      console.log('filePath',filePath);
-      setUploadedFile({ fileName, filePath });
-      console.log('uploadedfle', uploadedFile);
-    }
-    catch(err) {
-			if (err.response.status === 500) {
-				console.lg("There was a problem with the sever");
-			} else {
-				console.log(err.response.data.msg);
-			}
-    }
-    
-	}
+	const uploadPicture = async (e) => {
+		// const data = new FormData();
+		// data.append("image", picture);
+		// e.preventDefault();
+		// axios.defaults.withCredentials = true;
+		// try {
+		// 	const res = await axios.post(httpURL + "/upload", data, {
+		// 		headers: {
+		// 			"Content-Type": "multipart/form-data",
+		// 		},
+		// 	});
+		// 	console.log("res", res.data.filePath);
+		// 	const { fileName, filePath } = res.data;
+		// 	console.log("filePath", filePath);
+		// 	setUploadedFile({ fileName, filePath });
+		// 	console.log("uploadedfle", uploadedFile);
+		// } catch (err) {
+		// 	if (err.response.status === 500) {
+		// 		console.lg("There was a problem with the sever");
+		// 	} else {
+		// 		console.log(err.response.data.msg);
+		// 	}
+		// }
+	};
 
 	function handleSaveChanges() {
-		// let profileInfo = {
-		//     state,
-		//     picture
-		// }
 		console.log(state);
 		axios.defaults.withCredentials = true;
 		axios
-			.post(httpURL+"/update/userprofile", state)
+			.post(serverUrl + "update/userprofile", state)
 			.then((response) => {
 				console.log("Status code: ", response.status);
 				if (response.status === 200) {
+					userInfo.Firstname = state.firstname;
+					userInfo.Lastname = state.lastname;
+					userInfo.Nickname = state.nickname;
+					userInfo.Gender = state.gender;
+					userInfo.Phonenumber = state.phonenumber;
+					userInfo.Dateofbirth = state.birthday;
+					userInfo.State = state.state;
+					userInfo.Country = state.country;
+					userInfo.Thingsilove = state.thingsilove;
+					userInfo.Yelpingsince = state.yelpingsince;
+					userInfo.Findmein = state.findmein;
+					let payload = userInfo;
+					console.log('payload in rofileinfo', payload);
+					dispatch(getUserProfile(payload));
 					history.push("/userp");
 				}
 			})
@@ -173,8 +184,8 @@ function ProfileInfo() {
 							className='custom-file-input'
 							id='customFile'
 							onChange={onChange}
-						/>					
-					</div>					
+						/>
+					</div>
 
 					<input
 						type='submit'
@@ -182,14 +193,17 @@ function ProfileInfo() {
 						className='btn btn-primary btn-block mt-4'
 					/>
 				</form>
-        {uploadedFile ? (
-        <div className='row mt-5'>
-          <div className='col-md-6 m-auto'>            
-            <img style={{ width: '100%' }} src={uploadedFile.filePath} alt='' />
-          </div>
-        </div>
-      ) : null}
-				
+				{uploadedFile ? (
+					<div className='row mt-5'>
+						<div className='col-md-6 m-auto'>
+							<img
+								style={{ width: "100%" }}
+								src={uploadedFile.filePath}
+								alt=''
+							/>
+						</div>
+					</div>
+				) : null}
 			</div>
 			<div>
 				<Typography
@@ -482,12 +496,24 @@ function ProfileInfo() {
 	);
 }
 
-// const mapStateToProps = (state) => {
-//     return {
-//         firstname: state.profile.firstname,
-//         zipcode :  state.profile.zipcode
-//     }
-//   }
+const mapStateToProps = (state) => {
+	const userData = state.userReducer.user;
+	return {
+		userData,
+	};
+};
+const mapDispatchToProps = (dispatch) => {
+	return {
+		getUserProfile: (payload) => {
+			dispatch(
+				getUserProfile({
+					type: updateUserProfile,
+					payload,
+				})
+			);
+		},
+	};
+};
 
-//export default connect(mapStateToProps, null)(UserInfo);
-export default ProfileInfo;
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileInfo);
+//export default ProfileInfo;

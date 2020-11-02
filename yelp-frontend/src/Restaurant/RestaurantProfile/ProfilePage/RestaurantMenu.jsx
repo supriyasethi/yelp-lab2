@@ -1,60 +1,83 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Divider, Avatar } from "@material-ui/core";
-//import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import logo from "../../../assets/homepage1.jpg";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import axios from "axios";
+import PaginationComponent from '../../../helpers/PaginationComponent';
+import { menuList } from "../../../js/actions/restaurantActions";
+import { updateMenuList } from "../../../js/actionconstants/action-types";
 
-const useStyles = makeStyles((theme) => ({	
+const useStyles = makeStyles((theme) => ({
 	root: {
 		marginLeft: 300,
-		width: '100%',
-		maxWidth: '36ch',		
-	  },
-	  inline: {
-		display: 'inline',
-	  },
+		width: "100%",
+		maxWidth: "36ch",
+	},
+	inline: {
+		display: "inline",
+	},
 }));
 
-function RestaurantMenu() {
-
-	//let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+function RestaurantMenu(restaurantData) {
+	const dispatch = useDispatch();
 	let history = useHistory();
+	
+	const[menu, setMenu] = useState([]);
+	const[loading, setLoading] = useState(false);
+	const[currentPage, setCurrentPage] = useState(1);
+	const[postsPerPage] = useState(10);
+	let restaurantMenu = [];
+	 useEffect(() => {
 
-	let [state, setState] = React.useState({
-		menu: []	
-	});
+		const fetchMenu = async () => {
+		 restaurantMenu = await restaurantData.restaurantData.restaurant.Menu;
+		setMenu(restaurantMenu);	
+		}
+		fetchMenu();   
+	},[]);
 
-	var newMenu = [];	
+	console.log('menu', restaurantMenu);
+	//Get Current posts
+	const indexofLastPost = currentPage * postsPerPage;
+	const indexofFirstPost = indexofLastPost - postsPerPage;
+	const currentPosts = menu.slice(indexofFirstPost, indexofLastPost);
+	
+	const pageNumbers = [];
 
-	useEffect(() => {
-		var res = localStorage.getItem('restaurantId');
-		axios.defaults.withCredentials = true;
-		axios.get(httpURL+"/get/menu", {
-			params : {
-				restaurantId : res
-			}
-		}).then((response) => {
-			//update the state with the response data			
-			for (var i = 0; i < response.data.length; i++) {
-				var temp = response.data[i];	
-				newMenu.push({
-					id: i,
-					items: temp
-				});							
-			}	
-			setState({
-				menu: newMenu
-			});	
+	for (let i = 1; i <= Math.ceil((restaurantMenu.length) / postsPerPage); i++) {
+		pageNumbers.push(i);
+	}
+	
+	//Change Page
+	const paginate = (pageNumber) => setCurrentPage(pageNumber);
+	// const commonFetch = (PageNo = 0) => {
+	// 	let payload = {
+	// 	  menuList: [{ name: 'pr' }, { name: 'pr' }, { name: 'pr' }, { name: 'pr' }],
+	// 	  PageNo,
+	// 	  PageCount: Math.ceil(116 / 10),
+	// 	  Totalcount: 116,
+	
+	// 	  // PageCount: Math.ceil(response.data.Totalcount / 3),
+	// 	};
+	// 	dispatch(
+	// 		menuList(payload)
+	// 	);
+		
+	//   };
 
-		});
-	}, []);
+	//  const onPageClick = (e) => {
+	// 	// console.log('Page Clicked:', e.selected);
+	// 	commonFetch(e.selected);
+	//   };
+
+	//   useEffect(() => {
+	// 	commonFetch();
+	//   },[]);
 	
 	const classes = useStyles();
 
@@ -75,55 +98,80 @@ function RestaurantMenu() {
 				<Divider />
 			</div>
 
-			<List >
-				{state.menu.map((listitem) => (	
-					
-					<ListItem alignItems='flex-start' key={listitem.id}>
+			<List>
+				{restaurantMenu.map((listitem) => (
+					<ListItem alignItems='flex-start' key={listitem._id}>
 						<ListItemAvatar>
 							<Avatar alt='Remy Sharp' src={logo} />
 						</ListItemAvatar>
 						<ListItemText
-							primary={listitem.items.dishName}
+							primary={listitem.dishname}
 							secondary={
 								<React.Fragment>
 									<div>
-									<Typography
-										component='span'
-										variant='body2'
-										className={classes.inline}
-										color='textPrimary'>
-										Price:$
-									</Typography>
-									{listitem.items.price}
+										<Typography
+											component='span'
+											variant='body2'
+											className={classes.inline}
+											color='textPrimary'>
+											Price:$
+										</Typography>
+										{listitem.price}
 									</div>
 									<div>
-									<Typography
-										component='span'
-										variant='body2'
-										className={classes.inline}
-										color='textPrimary'>
-										Ingredients:
-									</Typography>
-									{listitem.items.ingredients}
+										<Typography
+											component='span'
+											variant='body2'
+											className={classes.inline}
+											color='textPrimary'>
+											Ingredients:
+										</Typography>
+										{listitem.ingredients}
 									</div>
+				
 								</React.Fragment>
 							}
 						/>
 					</ListItem>
-					
 				))}
 			</List>
 			<Divider />
+			<div className='module pt-xxsm'>
+				<ul className='pagination' style={{ justifyContent: "left" }}>
+					{pageNumbers.map((number) => (
+						<li key={number} className='page-item'>
+							<a onClick={() => paginate(number)} className='page-link'>
+								{number}
+							</a>
+						</li>
+					))}
+				</ul>
+			</div>
 		</div>
 	);
 }
 
-// const mapStateToProps = (state) => {
-//     return {
-//         firstname: state.profile.firstname,
-//         zipcode :  state.profile.zipcode
-//     }
-//   }
+const mapStateToProps = (state) => {
+	console.log(state);
+	const restaurantData = state.restaurant;
+	const menuData = state.menu;
+	return {
+		restaurantData,
+	};
+};
 
-//export default connect(mapStateToProps, null)(UserInfo);
-export default RestaurantMenu;
+const mapDispatchToProps = (dispatch) => {
+	return {
+		menuList: (payload) => {
+			dispatch(
+				menuList({
+					type: updateMenuList,
+					payload,
+				})
+			);
+		},
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(RestaurantMenu);
+//export default RestaurantMenu;

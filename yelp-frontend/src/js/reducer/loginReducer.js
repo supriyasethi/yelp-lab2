@@ -6,9 +6,7 @@ const initialState = {
     loginfailure : null
 }
 
-const loginReducer = (state = initialState, action) => {
-  console.log("processing in reducer");
-  console.log(action);
+const loginReducer = (state = initialState, action) => {  
   switch (action.type) {
       case LOG_IN: {
         return  {
@@ -28,8 +26,7 @@ const loginReducer = (state = initialState, action) => {
         loginsuccess: 'false'
          });          
      }       
-  }   
-  console.log(state);
+  }     
     return state;    
 }
 
