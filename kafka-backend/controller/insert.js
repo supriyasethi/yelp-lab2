@@ -2,7 +2,6 @@ const Users = require("../models/User");
 const Restaurants = require("../models/Restaurant");
 const Events = require("../models/Event");
 const UserFollows = require("../models/UserFollow");
-const Messages = require("../models/Messages");
 
 async function insertEvent(req, res) {
 	console.log("Inside Insert Event Post Request");
@@ -216,72 +215,6 @@ async function insertOrder(req, res) {
 	}
 }
 
- function insertMessage(req, res) {
-	console.log("Inside Insert Message Post Request");
-	console.log("Req Body : ", req.body);
-
-	const insertmessage = {
-		message: req.body.messages.message,
-			role: req.body.messages.role
-	}
-
-	const messagedata = new Messages({
-		messages:
-		{ message: req.body.messages.message,
-			role: req.body.messages.role
-		},
-		user: req.body.user,
-		userid: req.body.userid,
-		restaurant: req.body.restaurant,
-		restaurantid: req.body.restaurantid,
-		date: req.body.date,		
-	});
-
-	try {
-		 Messages.findOne({_id: req.body.messageid}, (error, message) => {
-			if(error) {
-				messagedata.save((error, data) => {
-					if (error) {	
-						console.log(error);
-						res.writeHead(500, {
-							'Content-Type': 'text/plain'
-						})
-						res.send(error);
-					}
-					else {
-						//callback(null,data);
-						console.log(data);
-						res.writeHead(200, {
-							'Content-Type': 'text/plain'
-						})
-						res.json(data);
-					}
-				})
-			}
-			if(message) {
-				 Messages.findOneAndUpdate({_id: req.body.messageid},
-					{$addToSet: { messages: insertmessage }}, { safe: true, upsert: true },
-					function (error, data) {
-						if (error) {
-							console.log("error", error);
-							res.json(500).send(error);
-						} else {
-							console.log("data", data);
-							res.status(200).json(data);
-						}
-					}
-					
-				);
-			}		
-	});
- } catch(err) {
-	 	console.log(err);
-	 	//callback(null,err);
-        //res.json({message: err});
-    }
-}
-
-
 module.exports = {
 	insertEvent,
 	insertMenu,
@@ -289,5 +222,4 @@ module.exports = {
 	insertReview,
 	insertOrder,
 	userFollow,
-	insertMessage
 };

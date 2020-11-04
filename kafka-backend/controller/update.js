@@ -1,6 +1,6 @@
 var express = require("express");
-const Users = require("../../kafka-backend/models/User");
-const Restaurants = require("../../kafka-backend/models/Restaurant");
+const Users = require("../models/User");
+const Restaurants = require("../models/Restaurant");
 
 function updateUser(req, res) {
 	console.log("Inside Update User Profile Post Request");
@@ -96,33 +96,8 @@ async function updateOrders(req, res) {
 		return res.status(500).json(err);
 	}
 }
-
-// async function updateMessages(req, res) {
-// 	console.log("Inside Update Messages Post Request");
-// 	console.log("Req Body : ", req.body);
-
-// 	var query = { _id: req.body.messageid};	
-// 	var update = {
-// 		$addToSet: {
-// 			"messages.$.message": req.body.messages.message,
-// 			"messages.$.role": req.body.messages.role,
-// 		},
-// 	};
-// 	try {
-// 		const messagePromise = await Restaurants.findOneAndUpdate(
-// 			query,
-// 			update
-// 		);		
-// 		console.log(messagePromise);
-// 		return res.status(200).json({ messagePromise});
-// 	} catch (error) {	
-// 		console.log(error)	;
-// 		return res.status(500).json(err);
-// 	}
-// }
 module.exports = {
 	updateUser,
 	updateBiz,
 	updateOrders,
-	//updateMessages
 };

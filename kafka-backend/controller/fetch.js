@@ -1,7 +1,6 @@
 const Users = require("../models/User");
 const Restaurants = require("../models/Restaurant");
 const Events = require("../models/Event");
-const Messages = require("../models/Messages");
 const url = require("url");
 
 async function fetchHomeBiz(req, res) {
@@ -233,43 +232,6 @@ async function fetchEvents(req, res) {
 					"Content-Type": "application/json",
 				});
 				res.end(JSON.stringify(eventdata));
-			}
-		});
-	} catch (error) {
-		res.status(500).send(error);
-	}
-}
-
-async function fetchEvents(req, res) {
-	console.log("Inside event fetch request");
-	const messagedata = [];
-	//console.log(req.query.restaurantId);
-	try {
-		const message = await Messages.find(function (error, data) {
-			if (error) {
-				res.json(500).send(error);
-			} else {
-				for (let i = 0; i < data.length; i += 1) {
-					const tempObj = {};		
-					const tempMessage = [];						
-					tempObj.user = data[i].user;
-					tempObj.userid = data[i].userid;
-					tempObj.restaurant = data[i].restaurant;					
-					tempObj.restaurantid = data[i].restaurantid;
-					tempObj.date = data[i].date;
-					for(let j = 0; j < (data[i].messages).length; j++ ) {
-						tempMessage.message = data[i].messages[j].message;
-						tempMessage.role = data[i].messages[j].role;
-					}
-					// eslint-disable-next-line no-await-in-loop
-					messagedata.push(tempObj);
-				}
-				console.log(messagedata);
-
-				res.writeHead(200, {
-					"Content-Type": "application/json",
-				});
-				res.end(JSON.stringify(messagedata));
 			}
 		});
 	} catch (error) {

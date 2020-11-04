@@ -59,7 +59,7 @@ const RestaurantLinks = () => {
 	}
 
 	function handleFetchMessage() {
-		//history.push('/bizp')
+		history.push('/messages')
 	}
 
 	function handleReviews() {

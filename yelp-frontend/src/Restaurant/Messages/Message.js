@@ -6,11 +6,14 @@ import "react-chat-widget/lib/styles.css";
 import RestaurantMenu from "./RestaurantMenu";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
-import { updateRestaurantProfile } from "../../../js/actionconstants/action-types";
-import { getProfile } from "../../../js/actions/restaurantActions";
+import { updateMessageList } from "../../../js/actionconstants/action-types";
+import { updateMessages } from "../../../js/actions/restaurantActions";
 import { connect, useDispatch } from "react-redux";
 import axios from "axios";
 import serverUrl from "../../../config.js";
+import logo from "../../../assets/homepage1.jpg";
+
+//import { useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -19,11 +22,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const RestaurantProfile = () => {
+const Message = () => {
 	let payload = "";
 	const dispatch = useDispatch();
-	let response = "";
-	let [restaurantName, setRestaurantname] = useState();
 
 	let history = useHistory();
 	if (!localStorage.getItem("token")) {
@@ -38,31 +39,20 @@ const RestaurantProfile = () => {
 			"token"
 		);
 		axios
-			.get(serverUrl + "get/bizp", {
-				params: {
-					restaurantId: restaurantId,
-				},
-			})
+			.get(serverUrl + "get/messages")
 			.then((response) => {
 				if (response.status === 200) {
-					//console.log("response", response.data);
+					console.log("response", response.data);
 					//update the state with the response data
 					payload = {
-						Name: response.data.name,
-						City: response.data.city,
-						Description: response.data.description,
-						Address: response.data.address,
-						Timing: response.data.timing,
-						Emailid: response.data.emailid,
-						Website: response.data.website,
-						Phonenumber: response.data.phonenumber,
-						Menu: response.data.menu,
-						Orders: response.data.orders,
-						Reviews: response.data.reviews,
-						Events: response.data.events,
+						message: response.data.message,
+						user: response.data.user,
+						userid: response.data.userid,
+						restaurant: response.data.restaurant,
+						restaurantid: response.data.restaurantid,
+						date: response.data.date,
 					};
-					dispatch(getProfile(payload));
-					setRestaurantname(response.data.name);
+					dispatch(updateMessages(payload));
 				}
 			})
 			.catch((error) => {
@@ -79,7 +69,10 @@ const RestaurantProfile = () => {
 				<Grid item container>
 					<Grid xs={0} sm={1} />
 					<Grid xs={12} sm={10}>
-						<ProfileBody />
+						<LeftBlock />
+					</Grid>
+					<Grid xs={12} sm={10}>
+						<RightBlock />
 					</Grid>
 					<Grid xs={0} sm={1} />
 				</Grid>
@@ -90,10 +83,10 @@ const RestaurantProfile = () => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		getProfile: (payload) => {
+		updateMessages: (payload) => {
 			dispatch(
-				getProfile({
-					type: updateRestaurantProfile,
+				updateMessages({
+					type: updateMessageList,
 					payload,
 				})
 			);
@@ -101,4 +94,4 @@ const mapDispatchToProps = (dispatch) => {
 	};
 };
 
-export default connect(null, mapDispatchToProps)(RestaurantProfile);
+export default connect(null, mapDispatchToProps)(Message);

@@ -7,3 +7,4 @@ export const updateRestaurantProfile = 'updateRestaurantProfile';
 export const updateUserProfile = 'updateUserProfile';
 export const updateMenuList = 'updateMenuList';
 export const usersList = 'usersList';
+export const updateMessageList = 'updateMessageList';

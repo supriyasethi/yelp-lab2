@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "chai": "^4.1.2",
     "chai-http": "^4.2.0",
@@ -20,6 +21,7 @@
     "express-session": "^1.15.6",
     "express-sessions": "^1.0.6",
     "kafka-node": "^3.0.1",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "password-hash": "^1.2.2"
   }
 }

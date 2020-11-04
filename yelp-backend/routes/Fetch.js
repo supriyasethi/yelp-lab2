@@ -41,4 +41,10 @@ router.get('/events', async(req, res) => {
     return value;
 });
 
+router.get('/messages', async(req, res) => {
+    console.log('Inside fetch messages route');
+    const value = await fetchMessages(req, res);
+    return value;
+});
+
 module.exports = router;

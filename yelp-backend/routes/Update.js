@@ -1,7 +1,11 @@
 "use strict";
 const express = require("express");
 const router = express.Router();
-const {updateUser, updateBiz, updateOrders} = require('../controller/update');
+const {
+	updateUser,
+	updateBiz,
+	updateOrders	
+} = require("../controller/update");
 
 //Route to handle Post Update user profile Request Call
 router.post("/userprofile", async (req, res) => {
@@ -13,15 +17,22 @@ router.post("/userprofile", async (req, res) => {
 //Route to handle Post Update biz profile Request Call
 router.post("/bizprofile", async (req, res) => {
 	console.log("Inside update user profile route");
-	const value = await updateBiz(req, res);	
+	const value = await updateBiz(req, res);
 	return value;
 });
 
 //Route to handle Post Update orders Request Call
 router.post("/orders", async (req, res) => {
 	console.log("Inside update user profile route");
-	const value = await updateOrders(req, res);	
+	const value = await updateOrders(req, res);
 	return value;
 });
+
+//Route to handle Post Update orders Request Call
+// router.post("/messages", async (req, res) => {
+// 	console.log("Inside update messages route");
+// 	const value = await updateMessages(req, res);
+// 	return value;
+// });
 
 module.exports = router;
