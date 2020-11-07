@@ -91,7 +91,9 @@ async function userFollow(req, res) {
 						res.json(500).send(error);
 					} else {
 						console.log("data", data);
-						res.status(200).json({ message: "You are now following this user!" });
+						res
+							.status(200)
+							.json({ message: "You are now following this user!" });
 					}
 				});
 			}
@@ -177,8 +179,8 @@ async function insertOrder(req, res) {
 	console.log(req.body);
 
 	var insertorderRestaurant = {
-		userid: req.query.userid,
-		username: req.query.username,
+		userid: req.body.userid,
+		username: req.body.username,
 		orderitem: req.body.orderitem,
 		delieveryoption: req.body.delieveryoption,
 		delieverystatus: req.body.delieverystatus,
@@ -186,8 +188,8 @@ async function insertOrder(req, res) {
 	};
 
 	var insertorderUser = {
-		restaurantid: req.query.resid,
-		restaurantname: req.query.restaurantname,
+		restaurantid: req.body.resid,
+		restaurantname: req.body.restaurantname,
 		orderitem: req.body.orderitem,
 		delieveryoption: req.body.delieveryoption,
 		delieverystatus: req.body.delieverystatus,
@@ -216,70 +218,87 @@ async function insertOrder(req, res) {
 	}
 }
 
- function insertMessage(req, res) {
+async function insertMessage(req, res) {
 	console.log("Inside Insert Message Post Request");
 	console.log("Req Body : ", req.body);
 
 	const insertmessage = {
 		message: req.body.messages.message,
-			role: req.body.messages.role
-	}
+		role: req.body.messages.role,
+	};
 
 	const messagedata = new Messages({
-		messages:
-		{ message: req.body.messages.message,
-			role: req.body.messages.role
+		messages: {
+			message: req.body.messages.message,
+			role: req.body.messages.role,
 		},
 		user: req.body.user,
 		userid: req.body.userid,
 		restaurant: req.body.restaurant,
 		restaurantid: req.body.restaurantid,
-		date: req.body.date,		
+		date: req.body.date,
 	});
 
 	try {
-		 Messages.findOne({_id: req.body.messageid}, (error, message) => {
-			if(error) {
-				messagedata.save((error, data) => {
-					if (error) {	
-						console.log(error);
-						res.writeHead(500, {
-							'Content-Type': 'text/plain'
-						})
-						res.send(error);
-					}
-					else {
-						//callback(null,data);
-						console.log(data);
-						res.writeHead(200, {
-							'Content-Type': 'text/plain'
-						})
-						res.json(data);
-					}
-				})
+		await Messages.find({ _id: req.body.messageid },
+			{userid: req.body.userid}, 
+			{restaurantid: req.body.restaurantid}, 
+			(error, message) => {
+			if (error) {
+				res.status(500).end();
+				errmsg = "DB not connected !";
+				//callback(500, errmsg);
 			}
-			if(message) {
-				 Messages.findOneAndUpdate({_id: req.body.messageid},
-					{$addToSet: { messages: insertmessage }}, { safe: true, upsert: true },
-					function (error, data) {
-						if (error) {
-							console.log("error", error);
-							res.json(500).send(error);
-						} else {
-							console.log("data", data);
-							res.status(200).json(data);
+			if (message) {
+				console.log(message);
+				console.log("inside update only message");
+				console.log(message.length);
+				if (message.length > 0) {
+					//updateOnlyMessage(insertmessage, req.body.messageid);
+					Messages.findOneAndUpdate(
+						{ _id: req.body.messageid },
+						{ $addToSet: { messages: insertmessage } },
+						{ safe: true, upsert: true },
+						function (error, data) {
+							if (error) {
+								console.log("error", error);
+								res.json(500).send(error);
+							} else {
+								console.log("data", data);
+								res.status(200).end(JSON.stringify(data));
+							}
 						}
-					}
-					
-				);
-			}		
-	});
- } catch(err) {
-	 	console.log(err);
-	 	//callback(null,err);
-        //res.json({message: err});
-    }
+					);
+				} else {
+					console.log("inside error");
+					messagedata.save((error, data) => {
+						if (error) {
+							console.log(error);
+							res.writeHead(500, {
+								"Content-Type": "text/plain",
+							});
+							res.send(error);
+						} else {
+							console.log(messagedata);
+							//callback(null,data);
+							console.log(data);
+							res.writeHead(200, {
+								"Content-Type": "text/plain",
+							});
+							res.json(data);
+						}
+					});
+				}
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		//callback(null,err);
+		//res.json({message: err});
+	}
 }
+
+
 
 
 module.exports = {
@@ -289,5 +308,6 @@ module.exports = {
 	insertReview,
 	insertOrder,
 	userFollow,
-	insertMessage
+	insertMessage,
+	
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import TopBar from "../TopBar/TopBar";
+import LoginSignupTopBar from "../../helpers/LoginSignupTopBar";
 import { Divider, Grid } from "@material-ui/core";
 import MessageBody from "./MessageBody";
 import { makeStyles } from "@material-ui/core/styles";
@@ -45,7 +45,7 @@ const Message = () => {
 		<div className={classes.root}>
 			<Grid container direction='column'>
 				<Grid item>
-					<TopBar />
+					<LoginSignupTopBar />
 				</Grid>
 				<Grid item container>
 					<Grid xs={0} sm={1} />

@@ -2,87 +2,125 @@ const Users = require("../models/User");
 const Restaurants = require("../models/Restaurant");
 const Events = require("../models/Event");
 const UserFollows = require("../models/UserFollow");
+const Messages = require("../models/Messages");
 
-async function insertEvent(req, res) {
+async function handle_request(msg, callback) {
+//async function insertEvent(req, res) {
+	switch (msg.api) {
+		case "insert_event": {
 	console.log("Inside Insert Event Post Request");
-	console.log("Req Body : ", req.body);
-
+	console.log("Req Body : ", msg);
+	let message = msg.data;
 	const eventdata = new Events({
-		name: req.body.eventname,
-		description: req.body.description,
-		time: req.body.time,
-		date: req.body.date,
-		location: req.body.location,
-		hashtags: req.body.hashtags,
-		restaurantId: req.body.resid,
+		name: message.eventname,
+		description: message.description,
+		time: message.time,
+		date: message.date,
+		location: message.location,
+		hashtags: message.hashtags,
+		restaurantId: message.resid,
 	});
 
 	try {
 		await eventdata.save((error, data) => {
 			if (error) {
 				console.log("error", error);
-				res.json(500).send(error);
+				response.status = 500;
+				response.data = "Network Error";
+				callback(null, response);
+				//res.json(500).send(error);
 			} else {
 				console.log("data", data);
-				res.status(200).json(data);
+				response.status = 200;
+				response.data = data;
+				callback(null, response);
+				//res.status(200).json(data);
 			}
 		});
 	} catch (err) {
-		res.json({ message: err });
+		console.log("error", error);
+				response.status = 500;
+				response.data = error;
+				callback(null, response);
+				//res.send(error);
+		//res.json({ message: err });
 	}
+	break;
 }
 
-async function userRegister(req, res) {
+//async function userRegister(req, res) {
+	case "insert_userregister": {
+		let message = msg.data;
 	var insertUserRegister = {
 		userid: req.query.userid,
-		userfirstname: req.body.firstname,
-		userlastname: req.body.lastname,
+		userfirstname: message.firstname,
+		userlastname: message.lastname,
 	};
 	var inserteventUser;
 
 	console.log(insertUserRegister);
 	try {
 		await Events.findOneAndUpdate(
-			{ _id: req.body.eventid },
+			{ _id: message.eventid },
 			{ $addToSet: { usersregistered: insertUserRegister } },
 			{ upsert: true },
 			function (error, data) {
 				if (error) {
 					console.log("error", error);
-					res.json(500).send(error);
+					response.status = 500;
+					response.data = "Network Error";
+					callback(null, response);
+					//res.json(500).send(error);
 				} else {
 					console.log("data", data);
-					res.status(200).json(data);
+					response.status = 200;
+					response.data = data;
+					callback(null, response);
+					//res.status(200).json(data);
 				}
 			}
 		);
 	} catch (error) {
 		console.log("error", error);
-		res.send(error);
+				response.status = 500;
+				response.data = error;
+				callback(null, response);
+				//res.send(error);
 	}
+	break;
 }
 
-async function userFollow(req, res) {
+//async function userFollow(req, res) {
+	case "insert_userfollow": {
+		let message = msg.data;
 	const userfollowdata = new UserFollows({
-		userid: req.body.userid,
-		firstname: req.body.firstname,
-		lastname: req.body.lastname,
-		city: req.body.city,
-		state: req.body.state,
-		yelpingsince: req.body.yelpingsince,
-		thingsilove: req.body.thingsilove,
-		findmein: req.body.findmein,
+		userid: message.userid,
+		firstname: message.firstname,
+		lastname: message.lastname,
+		city: message.city,
+		state: message.state,
+		yelpingsince: message.yelpingsince,
+		thingsilove: message.thingsilove,
+		findmein: message.findmein,
 	});
 
 	try {
-		await UserFollows.findOne({ userid: req.body.userid }, (error, user) => {
+		await UserFollows.findOne({ userid: message.userid }, (error, user) => {
 			if (error) {
-				res.status(500).end();
+				console.log("error", error);
+					response.status = 500;
+					response.data = "Network Error";
+					callback(null, response);
+					//res.json(500).send(error);
 			}
 			if (user) {
-				res
-					.status(200)
-					.json({ message: "You are already following this user!" });
+				console.log("inside user", user);
+						response.status = 400;
+						response.data = "You are already following this user!";
+						callback(null, response);
+				// res
+				// 	.status(200)
+				// 	.json({ message: "You are already following this user!" });
 			} else {
 				userfollowdata.save((error, data) => {
 					if (error) {
@@ -90,67 +128,91 @@ async function userFollow(req, res) {
 						res.json(500).send(error);
 					} else {
 						console.log("data", data);
-						res.status(200).json({ message: "You are now following this user!" });
+						console.log("inside user", user);
+						response.status = 200;
+						response.data = "You are now following this user!";
+						callback(null, response);
+						// res
+						// 	.status(200)
+						// 	.json({ message: "You are now following this user!" });
 					}
 				});
 			}
 		});
 	} catch (err) {
-		res.json({ message: err });
+		response.status = 500;
+				response.data = err;
+				callback(null, response);
+		//res.json({ message: err });
 	}
+	break;
 }
 
-async function insertMenu(req, res) {
+//async function insertMenu(req, res) {
+	case "insert_menu": {
+		let message = msg.data;
 	console.log("Inside Insert Menu Post Request");
-	console.log("Req Body : ", req.body);
-	console.log("Req Query : ", req.query);
+	console.log("Req Body : ", message);
+	console.log("Req Query : ", msg);
 
 	var insertmenu = {
-		dishname: req.body.dishname,
-		ingredients: req.body.ingredients,
-		price: req.body.price,
-		description: req.body.description,
-		category: req.body.category,
+		dishname: message.dishname,
+		ingredients: message.ingredients,
+		price: message.price,
+		description: message.description,
+		category: message.category,
 	};
 	console.log(insertmenu);
 	try {
 		await Restaurants.findOneAndUpdate(
-			{ _id: req.body.resId },
+			{ _id: message.resId },
 			{ $addToSet: { menu: insertmenu } },
 			function (error, data) {
 				if (error) {
 					console.log("error", error);
-					res.json(500).send(error);
+					response.status = 500;
+					response.data = "Network Error";
+					callback(null, response);
+					//res.json(500).send(error);
 				} else {
 					console.log("data", data);
-					res.status(200).json(data);
+					response.status = 200;
+					response.data = data;
+					callback(null, response);
+					//res.status(200).json(data);
 				}
 			}
 		);
 	} catch (error) {
 		console.log("error", error);
-		res.send(error);
+				response.status = 500;
+				response.data = error;
+				callback(null, response);
+				//res.send(error);
 	}
+	break;
 }
 
-async function insertReview(req, res) {
+//async function insertReview(req, res) {
+	case "insert_review": {
+	let message = msg.data;
 	console.log("Inside Insert Reviews Post Request");
-	console.log(req.body);
+	console.log(message);
 	var insertreviewRestaurant = {
-		userid: req.body.userid,
-		username: req.body.username,
-		review: req.body.review,
-		rating: req.body.rating,
+		userid: message.userid,
+		username: message.username,
+		review: message.review,
+		rating: message.rating,
 	};
 
 	var insertreviewUser = {
-		restaurantid: req.body.resid,
-		review: req.body.review,
-		rating: req.body.rating,
+		restaurantid: message.resid,
+		review: message.review,
+		rating: message.rating,
 	};
 	console.log(insertreviewRestaurant);
-	var query1 = { _id: req.body.resid };
-	var query2 = { _id: req.body.userid };
+	var query1 = { _id: message.resid };
+	var query2 = { _id: message.userid };
 	var update1 = {
 		$addToSet: { reviews: insertreviewRestaurant },
 	};
@@ -164,37 +226,46 @@ async function insertReview(req, res) {
 			update1,
 			options
 		);
-		const userPromise = await Users.findOneAndUpdate(query2, update2, options);
-		return res.status(200).json({ restaurantPromise, userPromise });
+		const userPromise = await Users.findOneAndUpdate(query2, update2, options);		
+							response.status = 200;
+							response.data = { restaurantPromise, userPromise };							
+		return (callback(null, response));
+		//res.status(200).json({ restaurantPromise, userPromise });
 	} catch (error) {
-		return res.status(500).json(err);
+		response.status = 500;
+							response.data = error;
+		return (callback(null,error));
+		//res.status(500).json(err);
 	}
+	break;
 }
 
-async function insertOrder(req, res) {
+//async function insertOrder(req, res) {
+	case "insert_order": {
+		let message = msg.data;
 	console.log("Inside Insert Order Post Request");
-	console.log(req.body);
+	console.log(message);
 
 	var insertorderRestaurant = {
-		userid: req.query.userid,
-		username: req.query.username,
-		orderitem: req.body.orderitem,
-		delieveryoption: req.body.delieveryoption,
-		delieverystatus: req.body.delieverystatus,
-		orderstatus: req.body.orderstatus,
+		userid: message.userid,
+		username: message.username,
+		orderitem: message.orderitem,
+		delieveryoption: message.delieveryoption,
+		delieverystatus: message.delieverystatus,
+		orderstatus: message.orderstatus,
 	};
 
 	var insertorderUser = {
-		restaurantid: req.query.resid,
-		restaurantname: req.query.restaurantname,
-		orderitem: req.body.orderitem,
-		delieveryoption: req.body.delieveryoption,
-		delieverystatus: req.body.delieverystatus,
-		orderstatus: req.body.orderstatus,
+		restaurantid: message.resid,
+		restaurantname: message.restaurantname,
+		orderitem: message.orderitem,
+		delieveryoption: message.delieveryoption,
+		delieverystatus: message.delieverystatus,
+		orderstatus: message.orderstatus,
 	};
 	console.log(insertorderRestaurant);
-	var query1 = { _id: req.body.resid };
-	var query2 = { _id: req.body.userid };
+	var query1 = { _id: message.resid };
+	var query2 = { _id: message.userid };
 	var update1 = {
 		$addToSet: { orders: insertorderRestaurant },
 	};
@@ -209,17 +280,123 @@ async function insertOrder(req, res) {
 			options
 		);
 		const userPromise = await Users.findOneAndUpdate(query2, update2, options);
-		return res.status(200).json({ restaurantPromise, userPromise });
+		response.status = 200;
+							response.data = { restaurantPromise, userPromise };							
+		return (callback(null, response));
+		//return res.status(200).json({ restaurantPromise, userPromise });
 	} catch (error) {
-		return res.status(500).json(err);
+		response.status = 500;
+							response.data = error;
+		return (callback(null,error));
+		//return res.status(500).json(err);
+	}
+	break;
+}
+
+
+//async function insertMessage(req, res) {
+	case "insert_order": {
+		let message = msg.data;
+	console.log("Inside Insert Message Post Request");
+	console.log("Req Body : ", message);
+
+	const insertmessage = {
+		message: message.messages.message,
+		role: message.messages.role,
+	};
+
+	const messagedata = new Messages({
+		messages: {
+			message: message.messages.message,
+			role: message.messages.role,
+		},
+		user: message.user,
+		userid: message.userid,
+		restaurant: message.restaurant,
+		restaurantid: message.restaurantid,
+		date: message.date,
+	});
+
+	try {
+		await Messages.find({ _id: message.messageid },
+			{userid: message.userid}, 
+			{restaurantid: message.restaurantid}, 
+			(error, message) => {
+			if (error) {
+				response.status(500)
+				response.data = "DB not connected !";
+				callback(null, response);
+			}
+			if (message) {
+				console.log(message);
+				console.log("inside update only message");
+				console.log(message.length);
+				if (message.length > 0) {
+					//updateOnlyMessage(insertmessage, message.messageid);
+					Messages.findOneAndUpdate(
+						{ _id: message.messageid },
+						{ $addToSet: { messages: insertmessage } },
+						{ safe: true, upsert: true },
+						function (error, data) {
+							if (error) {
+								console.log("error", error);
+								response.status = 500;
+								response.data = error;
+								callback(null, response);
+								//res.json(500).send(error);
+							} else {
+								console.log("data", data);
+								response.status = 200;
+								response.data = JSON.stringify(data);
+								callback(null, response);
+								//res.status(200).json(data);
+							}							
+						}
+					);
+				} else {
+					console.log("inside error");
+					messagedata.save((error, data) => {
+						if (error) {
+							console.log("error", error);
+							response.status = 500;
+							response.data = "Network Error";
+							callback(null, response);
+							//res.json(500).send(error);
+						} else {
+							console.log("data", data);
+							response.status = 200;
+							response.data = data;
+							callback(null, response);
+							//res.status(200).json(data);
+						}
+					});
+				}
+			}
+		});
+	} catch (err) {
+		console.log(err);
+		console.log("error", error);
+				response.status = 500;
+				response.data = error;
+				callback(null, response);
+		//callback(null,err);
+		//res.json({message: err});
+	}
+	break;
+}
 	}
 }
 
+
+
 module.exports = {
-	insertEvent,
-	insertMenu,
-	userRegister,
-	insertReview,
-	insertOrder,
-	userFollow,
+	handle_request
+	// insertEvent,
+	// insertMenu,
+	// userRegister,
+	// insertReview,
+	// insertOrder,
+	// userFollow,
+	// insertMessage,
+	
 };

@@ -1,57 +1,63 @@
 "use strict";
 const express = require("express");
 const router = express.Router();
+var config = require("../utils/config.js");
 //const {signupUser, signupBiz} = require('../controller/signup');
-var kafka = require('../kafka/client');
+var kafka = require("../kafka/client");
 
 //Route to handle user Signup
 router.post("/user", async (req, res) => {
 	console.log("Inside user signup route");
-	// const value = await signupUser(req, res);
-	// return value;
-	kafka.make_request('user_signup',req.body, function(err,results){
-        console.log('in result');
-        console.log(results);
-        if (err){
-            console.log("Inside err");
-            res.json({
-                status:"error",
-                msg:"System Error, Try Again."
-            })
-        }else{
-            console.log("Inside else");
-                res.json({
-                    updatedList:results
-                });
-                res.end();
-            }
-        
-    });
+	const data = {
+		api: "signup_user",
+		data: req.body,
+	};
+	kafka.make_request(config.signup_topic, data, function (err, results) {
+		if (err) {
+			console.log("Inside err");
+			res.status(500);
+			res.json({
+				status: "error",
+				msg: "System Error, Try Again.",
+			});
+			res.end();
+		} else {
+			console.log("inside else of request");
+
+			res.status(results.status);
+			// res.json(results.data);
+			res.end(results.data);
+		}
+		return res;
+	});
 });
 
 //Route to handle restaurant Signup
 router.post("/biz", async (req, res) => {
 	console.log("Inside biz signup route");
-	// const value = await signupBiz(req, res);
-	// return value;
-	kafka.make_request('biz_signup',req.body, function(err,results){
-        console.log('in result');
-        console.log(results);
-        if (err){
-            console.log("Inside err");
-            res.json({
-                status:"error",
-                msg:"System Error, Try Again."
-            })
-        }else{
-            console.log("Inside else");
-                res.json({
-                    updatedList:results
-                });
-                res.end();
-            }
-        
-    });
+	
+	const data = {
+		api: "signup_biz",
+		data: req.body,
+	};
+	kafka.make_request(config.signup_topic, data, function (err, results) {
+		if (err) {
+			console.log("Inside err");
+			res.status(500);
+			res.json({
+				status: "error",
+				msg: "System Error, Try Again.",
+			});
+			res.end();
+		} else {
+			console.log("inside else of request");
+
+			res.status(results.status);
+			// res.json(results.data);
+			res.end(results.data);
+		}
+		return res;
+	});
 });
 
 module.exports = router;

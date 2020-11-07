@@ -8,7 +8,8 @@ import Divider from "@material-ui/core/Divider";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 import StarOutlinedIcon from "@material-ui/icons/StarOutlined";
 import ListAltOutlinedIcon from "@material-ui/icons/ListAltOutlined";
-import PeopleIcon from '@material-ui/icons/People';
+import MessageIcon from '@material-ui/icons/Message';
+import PeopleIcon from "@material-ui/icons/People";
 import EventIcon from "@material-ui/icons/Event";
 import axios from "axios";
 import { Typography } from "@material-ui/core";
@@ -67,9 +68,9 @@ export default function UserDetails() {
 
 	function handleClickEvents() {
 		history.push("/eventsdisplay");
-  }
-  
-  function handleClickUsers() {
+	}
+
+	function handleClickUsers() {
 		history.push("/userlist");
 	}
 
@@ -77,6 +78,9 @@ export default function UserDetails() {
 		history.push("/vieworder");
 	}
 
+	function handleClickMessages() {
+		history.push("/usermessages");
+	}
 	useEffect(() => {
 		const userId = localStorage.getItem("userId");
 		axios
@@ -146,7 +150,7 @@ export default function UserDetails() {
 						/>
 					</ListItem>
 					<Divider variant='inset' component='li' style={{ width: "150px" }} />
-          <ListItem button>
+					<ListItem button>
 						<ListItemIcon>
 							<PeopleIcon />
 						</ListItemIcon>
@@ -154,6 +158,17 @@ export default function UserDetails() {
 							primary='Users'
 							classes={{ primary: classes.listItemText }}
 							onClick={handleClickUsers}
+						/>
+					</ListItem>
+					<Divider variant='inset' component='li' style={{ width: "150px" }} />
+					<ListItem button>
+						<ListItemIcon>
+							<MessageIcon />
+						</ListItemIcon>
+						<ListItemText
+							primary='Messages'
+							classes={{ primary: classes.listItemText }}
+							onClick={handleClickMessages}
 						/>
 					</ListItem>
 					<Divider variant='inset' component='li' style={{ width: "150px" }} />

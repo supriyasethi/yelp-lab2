@@ -4,6 +4,7 @@ import restaurantReducer from './restaurantReducer';
 import userReducer from './userReducer';
 import menuListReducer from './menuListReducer';
 import usersListReducer from './usersListReducer';
+import messagesReducer from './messagesReducer';
 import {combineReducers} from 'redux';
 
 const rootReducer = combineReducers({
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     restaurant : restaurantReducer,
     userReducer : userReducer,
     menuListReducer : menuListReducer,
-    usersListReducer : usersListReducer
+    usersListReducer : usersListReducer,
+    messagesReducer : messagesReducer
 });
 
 export default rootReducer;

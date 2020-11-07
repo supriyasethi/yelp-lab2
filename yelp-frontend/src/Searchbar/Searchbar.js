@@ -39,9 +39,9 @@ export function Searchbar() {
 
 	let history = useHistory();
 	const mapRef = useRef(null);
-	const classes = useStyles();
+	const classes = useStyles();	
+	let rows = [];
 
-	
 	let [state, setState] = React.useState({
 		find: "",
 		where: "",
@@ -62,7 +62,7 @@ export function Searchbar() {
 
 	function handleSearch() {
 		axios
-			.get(serverUrl+"/get/home", {
+			.get(serverUrl+"get/home", {
 				params: {
 					keyword: state.find,
 					location: state.where,
@@ -70,22 +70,13 @@ export function Searchbar() {
 			})
 			.then((response) => {
 				console.log("Status code: ", response.status);
-				if (response.status === 200) {
-					//history.push("/homea");
-					//dispatch(failure());
+				if (response.status === 200) {					
 					console.log(response);
 					if (response.data.length > 0) {
-						for (var i = 0; i < response.data.length; i++) {
-							issearch = 1;
-							var temp = response.data[i];
-							newRestaurant.push({
-								id: i,
-								items: temp,
-							});
-						}
+						newRestaurant = response.data;						
 						console.log("newRestaurant", newRestaurant);
-						setState({
-                            restaurants: newRestaurant,
+						setState({    
+							restaurants: newRestaurant,                        
                             header: (<Typography 
                             style={{color:'#d32323', fontWeight:"bold", fontSize:"18px"}}								
                             component='span'
@@ -97,6 +88,7 @@ export function Searchbar() {
 						});
 						console.log("restaurants", state.restaurants);
 					}
+					
 				}
 			})
 			.catch((error) => {
@@ -173,58 +165,43 @@ export function Searchbar() {
                     {state.header}
                         </div>
                         
-					{state.restaurants.map((listitem) => (
-                        
-						<ListItem alignItems='flex-start' key={listitem.id}>
-                            <Divider />
-							<ListItemAvatar>
-								<Avatar alt='Remy Sharp' src={logo} />
-							</ListItemAvatar>
-							<ListItemText
-								primary={listitem.items.name}
-								secondary={
-									<React.Fragment>
-										<div>
-											<Typography
-												component='span'
-												variant='body2'
-												className={classes.inline}
-												color='textPrimary'>
-												DishName:
-											</Typography>
-											{listitem.items.dishName}
-										</div>
-										<div>
-											<Typography
-												component='span'
-												variant='body2'
-												className={classes.inline}
-												color='textPrimary'>
-												Price:$
-											</Typography>
-											{listitem.items.price}
-										</div>
-										<div>
-											<Link
-												component='button'
-												variant='body2'
-												style={{
-													fontSize: "14px",
-													fontWeight: "bold",
-												}}
-												onClick={(event) =>
-													handleOrderRequest(event, listitem.items.restaurantId)
-												}>
-												Order Online
-											</Link>
-										</div>
-									</React.Fragment>
-								}
-							/>
-						</ListItem>
-					))}
-				</List>
-				<Divider />
+						{newRestaurant.map((listitem) => (
+					<ListItem alignItems='flex-start' key={listitem._id}>
+						<ListItemAvatar>
+							<Avatar alt='Remy Sharp' src={logo} />
+						</ListItemAvatar>
+						<ListItemText
+							primary={listitem.dishname}
+							secondary={
+								<React.Fragment>
+									<div>
+										<Typography
+											component='span'
+											variant='body2'
+											className={classes.inline}
+											color='textPrimary'>
+											Price:$
+										</Typography>
+										{listitem.price}
+									</div>
+									<div>
+										<Typography
+											component='span'
+											variant='body2'
+											className={classes.inline}
+											color='textPrimary'>
+											Ingredients:
+										</Typography>
+										{listitem.ingredients}
+									</div>
+				
+								</React.Fragment>
+							}
+						/>
+					</ListItem>
+				))}
+			</List>
+			<Divider />
 			</div>
 
 			

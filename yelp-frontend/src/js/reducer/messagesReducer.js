@@ -1,17 +1,17 @@
-const { updateRestaurantProfile } = require("../actionconstants/action-types");
+const { updateMessageList } = require("../actionconstants/action-types");
 
 const defaultState = {
-	messages: {
+	messages: [{
 		message: [],
         user: "",
         userid: "",
         restaurant: "",
         restaurantid: "",
 		date: "",		
-	},
+	}],
 };
 
-const messageReducer = (state = defaultState, action) => {    
+const messagesReducer = (state = defaultState, action) => {    
 	console.log('payload in message reducer', action.payload);
 	switch (action.type) {
 		case updateMessageList: {            
@@ -24,8 +24,7 @@ const messageReducer = (state = defaultState, action) => {
         default: {
             return { ...state };
           }		
-    }
-    return state;  
+    }    
 };
 
-export default messageReducer;
+export default messagesReducer;

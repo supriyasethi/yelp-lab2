@@ -59,7 +59,7 @@ const RestaurantLinks = () => {
 	}
 
 	function handleFetchMessage() {
-		history.push('/messages')
+		history.push('/resmessages')
 	}
 
 	function handleReviews() {

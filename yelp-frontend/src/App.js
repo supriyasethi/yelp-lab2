@@ -16,7 +16,8 @@ import HomePageA from './HomePage/HomePageA.js'
 import EventsDisplay from './EventsDisplay/User/EventsDisplay.js'
 import WriteReviews from './User/Review/WriteReview.js'
 import ViewReviews from './Restaurant/Reviews/ViewReviews.js'
-import ViewMessages from './Restaurant/Messages/message.js'
+import ViewResMessages from './Restaurant/Messages/Message.js'
+import ViewUserMessages from './User/Messages/Message.js'
 import {Switch, Route} from 'react-router-dom';     
 import LoginUser from './User/LoginPage/LoginUser';
 import ViewOrder from './User/OrdersPage/Order.js';
@@ -42,7 +43,8 @@ function App() {
        <Route path="/menu" component={RestaurantMenu}/>
        <Route path="/event" component={AddEvent}/>
        <Route path="/events" component={FetchEvents}/>
-       <Route path="/messages" component={ViewMessages}/>
+       <Route path="/resmessages" component={ViewResMessages}/>
+       <Route path="/usermessages" component={ViewUserMessages}/>
        <Route path="/eventsdisplay" component={EventsDisplay}/>       
        <Route path="/bizdisplay" component={ProfileDisplay}/>
        <Route path="/bizlist" component={RestaurantList}/>

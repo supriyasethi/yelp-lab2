@@ -1,131 +1,131 @@
 "use strict";
-const bcrypt = require('bcrypt');
-var passwordHash = require('password-hash');
+const bcrypt = require("bcrypt");
+var passwordHash = require("password-hash");
 const User = require("../models/User");
 const Restaurant = require("../models/Restaurant");
 
-//function handle_request_usersignup(msg, callback){
-async function signupUser(msg, callback){
-    console.log("Inside Signup Post Request");  
-  console.log("Req Body : ",msg);
-  let errmsg = '';
-  let hashedPassword = passwordHash.generate(msg.login.password);	
-    console.log(hashedPassword);
-	const userdata = new User({
-		firstname: msg.firstname,
-		lastname: msg.lastname,
-		dateofbirth: msg.birthday,
-		city: msg.city,
-		state: msg.state,
-		country: msg.country,
-		nickname: msg.nickname,
-		gender: msg.gender,
-		emailid: msg.username,
-		phonenumber: msg.phonenumber,
-		yelpingsince: msg.yelpingsince,
-		thingsilove:msg.thingsilove,
-		findmein: msg.findmein,
-		login: {
-			username: msg.login.username,
-			password: hashedPassword,
-		},
-	});
-	try {
-		await User.findOne({emailid: msg.username}, (error, user) => {
-			if(error) {
-				errmsg = 'DB not connected!';
-				callback(500, errmsg);
-				//res.status(500).end();
-			}
-			if(user) {
-				errmsg = 'Username already exists!';
-				callback(400, errmsg);
-				//res.status(400).json({message: 'Username already exists!'})
-			}
-			else {
-				userdata.save((error, data) => {
+function handle_request(msg, callback) {
+	switch (msg.api) {
+		case "signup_user": {
+			console.log("Inside Signup Post Request");
+			console.log("Req Body : ", msg);
+			let message = msg.data;
+			try {
+				User.findOne({ emailid: message.username }, (error, user) => {
+					console.log("inside user find one");
 					if (error) {
-						callback(500, error);
-						// res.writeHead(500, {
-						// 	'Content-Type': 'text/plain'
-						// }).send(error);						
+						console.log("inside error", error);
+						response.status = 500;
+						response.data = "Network Error";
+						callback(null, response);
 					}
-					else {
-						callback(null, data);
-						// res.writeHead(200, {
-						// 	'Content-Type': 'text/plain'
-						// }).json(data);						
+					if (user) {
+						console.log("inside user", user);
+						response.status = 400;
+						response.data = "Email Already Exists";
+						callback(null, response);
+					} else {
+						let hashedPassword = passwordHash.generate(message.login.password);
+						console.log(hashedPassword);
+						const userdata = new User({
+							firstname: message.firstname,
+							lastname: message.lastname,
+							dateofbirth: message.birthday,
+							city: message.city,
+							state: message.state,
+							country: message.country,
+							nickname: message.nickname,
+							gender: message.gender,
+							emailid: message.username,
+							phonenumber: message.phonenumber,
+							yelpingsince: message.yelpingsince,
+							thingsilove: message.thingsilove,
+							findmein: message.findmein,
+							login: {
+								username: message.login.username,
+								password: hashedPassword,
+							},
+						});
+						userdata.save((error, data) => {
+							if (error) {
+								console.log("inside user data error", error);
+								callback(err1, null);
+							} else if (data) {
+								console.log("inside user data response", response);
+								response.status = 200;
+								response.data = "User Created";
+								callback(null, response);
+							}
+						});
 					}
-				})
+				});
+			} catch (err) {
+				response.status = 500;
+				response.data = "Network Error";
+				callback(null, response);
+			}
+			break;
 		}
-	});        
-} catch(err) {
-		callback(null, err);
-        //res.json({message: err});
-    }  
- 
-}
 
-//function handle_request_bizsignup(msg, callback){
-async function signupBiz(msg, callback) {
-	let errmsg = '';
-    console.log("Inside Signup Post Request");  
-    console.log("Req Body : ",msg);    
-    let hashedPassword = passwordHash.generate(msg.login.password);	
-    console.log(hashedPassword);
-	const bizdata = new Restaurant({
-		name: msg.name,
-		city: msg.city,
-		description: msg.description,
-		address: msg.address,
-		timing: msg.timing,		
-		emailid: msg.username,
-		website: msg.website,
-		phonenumber: msg.phonenumber,		
-		login: {
-			username: msg.login.username,
-			password: hashedPassword,
-		},
-	});
-	try {
-		await Restaurant.findOne({emailid: msg.username}, (error, bizuser) => {
-			if(error) {
-				//res.status(500).end();
-				errmsg = 'DB not connected !';
-				callback(500, errmsg);
-			}
-			if(bizuser) {
-				errmsg = 'Username already exists!';
-				callback(400, errmsg);
-				//res.status(400).json({message: 'Username already exists!'})
-			}
-			else {
-				bizdata.save((error, data) => {
+		case "signup_biz": {
+			console.log("Inside Signup Post Request");
+			console.log("Req Body : ", msg);
+			let message = msg.data;
+			try {
+				Restaurant.findOne({ emailid: message.username }, (error, bizuser) => {
 					if (error) {
-						callback(500,error);
-						// res.writeHead(500, {
-						// 	'Content-Type': 'text/plain'
-						// })
-						// res.send(error);
+						console.log("inside error", error);
+						response.status = 500;
+						response.data = "Network Error";
+						callback(null, response);
 					}
-					else {
-						callback(null,data);
-						// res.writeHead(200, {
-						// 	'Content-Type': 'text/plain'
-						// })
-						// res.json(data);
+					if (user) {
+						console.log("inside user", user);
+						response.status = 400;
+						response.data = "Email Already Exists";
+						callback(null, response);
+					} else {
+						let hashedPassword = passwordHash.generate(message.login.password);
+						console.log(hashedPassword);
+						const bizdata = new Restaurant({
+							name: message.name,
+							city: message.city,
+							description: message.description,
+							address: message.address,
+							timing: message.timing,
+							emailid: message.username,
+							website: message.website,
+							phonenumber: message.phonenumber,
+							login: {
+								username: message.login.username,
+								password: hashedPassword,
+							},
+						});
+						bizdata.save((error, data) => {
+							if (error) {
+								console.log("inside user data error", error);
+								callback(err1, null);
+							} else if (data) {
+								console.log("inside user data response", response);
+								response.status = 200;
+								response.data = "User Created";
+								callback(null, response);
+							}
+						});
 					}
-				})
+				});
+			} catch (err) {
+				response.status = 500;
+				response.data = "Network Error";
+				callback(null, response);
+			}
+			break;
 		}
-	});
- } catch(err) {
-	 	callback(null,err);
-        //res.json({message: err});
-    }
+	}
 }
 
-module.exports = {	
-    signupUser,
-    signupBiz
-}
-
+module.exports = {
+	handle_request,
+	//signupUser,
+	//signupBiz
+};

@@ -4,11 +4,15 @@ var passwordHash = require('password-hash');
 const User = require("../models/User");
 const Restaurant = require("../models/Restaurant");
 
-//function handle_request_usersignup(msg, callback){
-async function signupUser(msg, callback){
+async function handle_request(msg, callback){
+
+	switch (msg.api) {
+	case 'signup_user': {	
+//async function signupUser(msg, callback){
+	
     console.log("Inside Signup Post Request");  
-  console.log("Req Body : ",msg);
-  let errmsg = '';
+  	console.log("Req Body : ",msg);
+  	let errmsg = '';
   let hashedPassword = passwordHash.generate(msg.login.password);	
     console.log(hashedPassword);
 	const userdata = new User({
@@ -33,41 +37,40 @@ async function signupUser(msg, callback){
 	try {
 		await User.findOne({emailid: msg.username}, (error, user) => {
 			if(error) {
-				errmsg = 'DB not connected!';
-				callback(500, errmsg);
-				//res.status(500).end();
+				response.status = 500;
+				response.data = 'Network Error';
+				callback(null, response);
 			}
 			if(user) {
-				errmsg = 'Username already exists!';
-				callback(400, errmsg);
-				//res.status(400).json({message: 'Username already exists!'})
+				response.status = 400;
+            	response.data = 'Email Already Exists';
+            	callback(null, response);
 			}
 			else {
 				userdata.save((error, data) => {
 					if (error) {
-						callback(500, error);
-						// res.writeHead(500, {
-						// 	'Content-Type': 'text/plain'
-						// }).send(error);						
-					}
+						callback(err1, null);					
+					}  
 					else {
-						callback(null, data);
-						// res.writeHead(200, {
-						// 	'Content-Type': 'text/plain'
-						// }).json(data);						
+						response.status = 201;
+                   		response.data = 'User Created';
+                    	callback(null, response);					
 					}
 				})
 		}
 	});        
 } catch(err) {
-		callback(null, err);
-        //res.json({message: err});
+	response.status = 500;
+	response.data = 'Network Error';
+	callback(null, response);
     }  
- 
+	break;
 }
 
+	case 'signup_biz': {	
+
 //function handle_request_bizsignup(msg, callback){
-async function signupBiz(msg, callback) {
+//async function signupBiz(msg, callback) {
 	let errmsg = '';
     console.log("Inside Signup Post Request");  
     console.log("Req Body : ",msg);    
@@ -121,11 +124,15 @@ async function signupBiz(msg, callback) {
  } catch(err) {
 	 	callback(null,err);
         //res.json({message: err});
-    }
+	}
+	break;
+}
+	}
 }
 
 module.exports = {	
-    signupUser,
-    signupBiz
+	handle_request
+    //signupUser,
+    //signupBiz
 }
 

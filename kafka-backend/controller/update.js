@@ -1,103 +1,139 @@
 var express = require("express");
-const Users = require("../models/User");
-const Restaurants = require("../models/Restaurant");
+const Users = require("../../kafka-backend/models/User");
+const Restaurants = require("../../kafka-backend/models/Restaurant");
 
-function updateUser(req, res) {
-	console.log("Inside Update User Profile Post Request");
-	console.log("Req Body : ", req.body);
-	try {
-		Users.findOneAndUpdate(
-			{ _id: req.body.userid },
-			{
-				$set: {
-					firstname: req.body.firstname,
-					lastname: req.body.lastname,
-					dateofbirth: req.body.birthday,					
-					state: req.body.state,
-					country: req.body.country,
-					nickname: req.body.nickname,
-					gender: req.body.gender,					
-					phonenumber: req.body.phonenumber,
-					yelpingsince: req.body.yelpingsince,
-					thingsilove: req.body.thingsilove,
-					findmein: req.body.findmein,
-				},
-			},
-			{ upsert: true },
-			function (error, data) {
-				if (error) {
-					console.log("error", error);
-					res.json(500).send(error);
-				} else {
-					console.log("data", data);
-					res.status(200).json(data);
-				}
+async function handle_request(msg, callback) {
+	//function updateUser(req, res) {
+	switch (msg.api) {
+		case "update_userprofile": {
+			console.log("Inside Update User Profile Post Request");
+			console.log("Req Body : ", msg);
+			let message = msg.data;
+			try {
+				Users.findOneAndUpdate(
+					{ _id: message.userid },
+					{
+						$set: {
+							firstname: message.firstname,
+							lastname: message.lastname,
+							dateofbirth: message.birthday,
+							state: message.state,
+							country: message.country,
+							nickname: message.nickname,
+							gender: message.gender,
+							phonenumber: message.phonenumber,
+							yelpingsince: message.yelpingsince,
+							thingsilove: message.thingsilove,
+							findmein: message.findmein,
+						},
+					},
+					{ upsert: true },
+					function (error, data) {
+						if (error) {
+							console.log("error", error);
+							response.status = 500;
+							response.data = "Network Error";
+							callback(null, response);
+							//res.json(500).send(error);
+						} else {
+							console.log("data", data);
+							response.status = 200;
+							response.data = data;
+							callback(null, response);
+							//res.status(200).json(data);
+						}
+					}
+				);
+			} catch (error) {
+				console.log("error", error);
+				response.status = 500;
+				response.data = error;
+				callback(null, response);
+				//res.send(error);
 			}
-		);
-	} catch (error) {
-		console.log("error", error);
-		res.send(error);
-	}
-}
+			break;
+		}
 
-function updateBiz(req, res) {
-	console.log("Inside Update Restaurant Profile Post Request");
-	console.log("Req Body : ", req.body);
-	try {
-		Restaurants.findOneAndUpdate(
-			{ _id: req.body.restaurantId },
-			{
-				$set: {
-					name: req.body.name,					
-					description: req.body.description,
-					address: req.body.address,
-					timing: req.body.timing,					
-					website: req.body.website,
-					phonenumber: req.body.phonenumber,
-				},
-			},
-			{ upsert: true },
-			function (error, data) {
-				if (error) {
-					console.log("error", error);
-					res.json(500).send(error);
-				} else {
-					console.log("data", data);
-					res.status(200).json(data);
-				}
+		//function updateBiz(req, res) {
+		case "update_bizprofile": {
+			console.log("Inside Update Restaurant Profile Post Request");
+			console.log("Req Body : ", msg);
+			let message = msg.data;
+			try {
+				Restaurants.findOneAndUpdate(
+					{ _id: message.restaurantId },
+					{
+						$set: {
+							name: message.name,
+							description: message.description,
+							address: message.address,
+							timing: message.timing,
+							website: message.website,
+							phonenumber: message.phonenumber,
+						},
+					},
+					{ upsert: true },
+					function (error, data) {
+						if (error) {
+							console.log("error", error);
+							response.status = 500;
+							response.data = "Network Error";
+							callback(null, response);
+							//res.json(500).send(error);
+						} else {
+							console.log("data", data);
+							response.status = 200;
+							response.data = data;
+							callback(null, response);
+							//res.status(200).json(data);
+						}
+					}
+				);
+			} catch (error) {
+				console.log("error", error);
+				response.status = 500;
+				response.data = error;
+				callback(null, response);
+				//res.send(error);
 			}
-		);
-	} catch (error) {
-		console.log("error", error);
-		res.send(error);
+			break;
+		}
+
+		case "update_order": {
+			//async function updateOrders(req, res) {
+			console.log("Inside Update Order Profile Post Request");
+			console.log("Req Body : ", msg);
+			let message = msg.data;
+			var query1 = { _id: message.resid, "orders._id": message.orderid };
+			var query2 = {
+				_id: message.userid,
+				"orders.restaurantid": message.resid,
+			};
+			var update = {
+				$set: {
+					"orders.$.delieverystatus": message.delieverystatus,
+					"orders.$.orderstatus": message.orderfilter,
+				},
+			};
+			try {
+				const restaurantPromise = await Restaurants.findOneAndUpdate(
+					query1,
+					update
+				);
+				const userPromise = await Users.findOneAndUpdate(query2, update);
+				return res.status(200).json({ restaurantPromise, userPromise });
+			} catch (error) {
+				return res.status(500).json(err);
+			}
+			break;
+		}
 	}
 }
 
-async function updateOrders(req, res) {
-	console.log("Inside Update Order Profile Post Request");
-	console.log("Req Body : ", req.body);
-
-	var query1 = { _id: req.body.resid, "orders._id": req.body.orderid };
-	var query2 = { _id: req.body.userid, "orders.restaurantid": req.body.resid };
-	var update = {
-		$set: {
-			"orders.$.delieverystatus": req.body.delieverystatus,
-			"orders.$.orderstatus": req.body.orderfilter,
-		},
-	};
-	try {
-		const restaurantPromise = await Restaurants.findOneAndUpdate(
-			query1,
-			update
-		);
-		const userPromise = await Users.findOneAndUpdate(query2, update);
-		return res.status(200).json({ restaurantPromise, userPromise });
-	} catch (error) {
-		return res.status(500).json(err);
-	}
-}
 module.exports = {
-	updateUser,
-	updateBiz,
-	updateOrders,
+	handle_request,
+	// updateUser,
+	// updateBiz,
+	// updateOrders,
+	//updateMessages
 };

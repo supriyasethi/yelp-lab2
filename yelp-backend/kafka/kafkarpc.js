@@ -1,7 +1,7 @@
 var crypto = require('crypto');
 var conn = require('./Connection');
 
-var TIMEOUT=8000; //time to wait for response in ms
+var TIMEOUT=8000 * 60; //time to wait for response in ms
 var self;
 
 exports = module.exports =  KafkaRPC;
@@ -21,20 +21,20 @@ KafkaRPC.prototype.makeRequest = function(topic_name, content, callback){
     var correlationId = crypto.randomBytes(16).toString('hex');
 
     //create a timeout for what should happen if we don't get a response
-    // var tId = setTimeout(function(corr_id){
-    //     //if this ever gets called we didn't get a response in a
-    //     //timely fashion
-    //     console.log('timeout');
-    //     callback(new Error("timeout " + corr_id));
-    //     //delete the entry from hash
-    //     delete self.requests[corr_id];
-    // }, TIMEOUT, correlationId);
+    var tId = setTimeout(function(corr_id){
+        //if this ever gets called we didn't get a response in a
+        //timely fashion
+        console.log('timeout');
+        callback(new Error("timeout " + corr_id));
+        //delete the entry from hash
+        delete self.requests[corr_id];
+    }, TIMEOUT, correlationId);
 
-    // //create a request entry to store in a hash
-    // var entry = {
-    //     callback:callback,
-    //     timeout: tId //the id for the timeout so we can clear it
-    // };
+    //create a request entry to store in a hash
+    var entry = {
+        callback:callback,
+        timeout: tId //the id for the timeout so we can clear it
+    };
 
     //put the entry in the hash so we can match the response later
     self.requests[correlationId]=entry;
@@ -54,7 +54,7 @@ KafkaRPC.prototype.makeRequest = function(topic_name, content, callback){
         console.log('in response1');
         console.log(self.producer.ready);
         self.producer.send(payloads, function(err, data){
-            console.log('in respo  nse2');
+            console.log('in response2');
             if(err)
                 console.log(err);
             console.log(data);

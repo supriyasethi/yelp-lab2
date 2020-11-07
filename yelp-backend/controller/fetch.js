@@ -7,19 +7,38 @@ const url = require("url");
 async function fetchHomeBiz(req, res) {
 	console.log("Inside Home Get request");
 	console.log("req query", req.query);
+	const { keyword, location } = url.parse(req.url, true).query;
+	let menuData = [];
 	try {
 		const user = await Restaurants.find(
 			{
-				city: { $regex: req.query.location, $options: "i" },
-				"menu.dishname": { $regex: req.query.keyword, $options: "i" },
+				city: { $regex: `${location}`, $options: 'i' },
+				"menu.dishname": { $regex: `${keyword}`, $options: 'i' },
 			},
 			function (error, data) {
 				if (error) {
 					console.log("error", error);
 					res.json(500).send(error);
 				} else {
-					console.log("data", data);
-					res.status(200).json(data);
+					const tempObj = {};
+					for (var i = 0; i < data.length; i++) {
+						issearch = 1;
+						tempObj.name = data[i].name;
+						tempObj.restauarantid = data[i]._id;
+						for(var j = 0; j< data[i].menu.length; j++) {
+							console.log('inside j loop');
+							if(data[i].menu[j].dishname.toLowerCase() === keyword.toLowerCase()) {
+								console.log('inside if condition');
+								console.log(data[i].menu[j].dishname);
+								tempObj.dishname = data[i].menu[j].dishname;
+								tempObj.price = data[i].menu[j].price;
+								
+							}	
+													;
+						}
+						menuData.push(tempObj)	
+					}								
+					res.status(200).json(menuData);
 				}
 			}
 		);
@@ -240,8 +259,8 @@ async function fetchEvents(req, res) {
 	}
 }
 
-async function fetchEvents(req, res) {
-	console.log("Inside event fetch request");
+async function fetchMessages(req, res) {
+	console.log("Inside message fetch request");
 	const messagedata = [];
 	//console.log(req.query.restaurantId);
 	try {
@@ -251,16 +270,18 @@ async function fetchEvents(req, res) {
 			} else {
 				for (let i = 0; i < data.length; i += 1) {
 					const tempObj = {};		
-					const tempMessage = [];						
+					//const tempMessage = [];	
+					tempObj.id = data[i]._id,										
 					tempObj.user = data[i].user;
 					tempObj.userid = data[i].userid;
 					tempObj.restaurant = data[i].restaurant;					
 					tempObj.restaurantid = data[i].restaurantid;
 					tempObj.date = data[i].date;
-					for(let j = 0; j < (data[i].messages).length; j++ ) {
-						tempMessage.message = data[i].messages[j].message;
-						tempMessage.role = data[i].messages[j].role;
-					}
+					tempObj.messages = data[i].messages;
+					// for(let j = 0; j < (data[i].messages).length; j++ ) {
+					// 	tempObj.messages.message = data[i].messages[j].message;
+					// 	tempObj.messages.role = data[i].messages[j].role;
+					// }
 					// eslint-disable-next-line no-await-in-loop
 					messagedata.push(tempObj);
 				}
@@ -284,4 +305,5 @@ module.exports = {
 	fetchEvent,
 	fetchEvents,
 	fetchUsersList,
+	fetchMessages
 };
