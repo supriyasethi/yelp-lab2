@@ -6,7 +6,7 @@ var Event = new Schema(
 		name: { type: String, required: false },
 		description: { type: String, required: false },
 		time: { type: String, required: false },
-		date: { type: Date, required: false },
+		date: { type: String, required: false },
 		location: { type: String, required: false },
 		hashtags: { type: String, required: false },
 		restaurantId: { type: String, required: false },

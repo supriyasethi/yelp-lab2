@@ -247,21 +247,22 @@ async function handle_request(msg, callback) {
 						console.log(data);
 						for (let i = 0; i < data.length; i++) {
 							const tempObj = {};
-							let formatdate = "";
+							//let formatdate = "";
 							tempObj.name = data[i].name;
 							tempObj.time = data[i].time;
-							formatdate = data[i].date;
-							let year = formatdate.getFullYear();
-							let month = formatdate.getMonth() + 1;
-							let dt = formatdate.getDate();
+							// formatdate = data[i].date;
+							// let year = formatdate.getFullYear();
+							// let month = formatdate.getMonth() + 1;
+							// let dt = formatdate.getDate();
 
-							if (dt < 10) {
-								dt = "0" + dt;
-							}
-							if (month < 10) {
-								month = "0" + month;
-							}
-							tempObj.date = year + "-" + month + "-" + dt;
+							// if (dt < 10) {
+							// 	dt = "0" + dt;
+							// }
+							// if (month < 10) {
+							// 	month = "0" + month;
+							// }
+							// tempObj.date = year + "-" + month + "-" + dt;
+							tempObj.date = data[i].date;
 							tempObj.location = data[i].location;
 							tempObj.restaurantId = data[i].restaurantId;
 							tempObj.usersregistered = data[i].usersregistered;
@@ -309,18 +310,19 @@ async function handle_request(msg, callback) {
 							let formatdate = "";
 							tempObj.name = data[i].name;
 							tempObj.time = data[i].time;
-							formatdate = data[i].date;
-							let year = formatdate.getFullYear();
-							let month = formatdate.getMonth() + 1;
-							let dt = formatdate.getDate();
+							// formatdate = data[i].date;
+							// let year = formatdate.getFullYear();
+							// let month = formatdate.getMonth() + 1;
+							// let dt = formatdate.getDate();
 
-							if (dt < 10) {
-								dt = "0" + dt;
-							}
-							if (month < 10) {
-								month = "0" + month;
-							}
-							tempObj.date = year + "-" + month + "-" + dt;
+							// if (dt < 10) {
+							// 	dt = "0" + dt;
+							// }
+							// if (month < 10) {
+							// 	month = "0" + month;
+							// }
+							// tempObj.date = year + "-" + month + "-" + dt;
+							tempObj.date = data[i].date;
 							tempObj.location = data[i].location;
 							tempObj.restaurantId = data[i].restaurantId;
 							tempObj.usersregistered = data[i].usersregistered;

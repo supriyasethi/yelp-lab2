@@ -92,7 +92,7 @@ function UserProfile() {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		getProfile: (payload) => {
+		getUserProfile: (payload) => {
 			dispatch(
 				getUserProfile({
 					type: updateUserProfile,

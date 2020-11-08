@@ -7,8 +7,8 @@ const multer = require('multer');
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var cors = require('cors');
-// var redis = require('redis');
-// var connectRedis = require('connect-redis');
+var redis = require('redis');
+var connectRedis = require('connect-redis');
 var auth = require('./middleware/auth');
 var fileupload = require('express-fileupload');
 const { mongoDB, secret, frontendURL } = require('./utils/config');
@@ -19,11 +19,11 @@ app.use(fileupload());
 //if you run behind a proxy (eg nginx)
 //app.set("trust proxy", 1);
 
-// var RedisStore = connectRedis(session);
-// var redisClient = redis.createClient({
-//   port : 6379,
-//   host: 'localhost'
-// })
+var RedisStore = connectRedis(session);
+var redisClient = redis.createClient({
+  port : 6379,
+  host: 'localhost'
+})
 
 app.set('view engine', 'ejs');
 
@@ -33,7 +33,7 @@ app.use(cors({ origin: frontendURL, credentials: true }));
 
 //use express session to maintain session data
 app.use(session({
-    //store               : new RedisStore({client: redisClient}),
+    store               : new RedisStore({client: redisClient}),
     secret              : secret,
     resave              : true, // Forces the session to be saved back to the session store, even if the session was never modified during the request
     saveUninitialized   : true, // Force to save uninitialized session to db. A session is uninitialized when it is new but not modified.

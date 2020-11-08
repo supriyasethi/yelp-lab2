@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import LoginSignupTopBar from "../../helpers/LoginSignupTopBar";
 import { Divider, Grid } from "@material-ui/core";
 import MessageBody from "./MessageBody";
+import { connect, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import serverUrl from "../../config.js";
+import { updateMessageList } from "../../js/actionconstants/action-types";
+import { updateMessages } from "../../js/actions/restaurantActions";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -16,6 +19,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Message = () => {	
 
+	const dispatch = useDispatch();
+	let payload = '';
 	let history = useHistory();
 	if (!localStorage.getItem("token")) {
 		history.push("/home");
@@ -27,13 +32,18 @@ const Message = () => {
 			"token"
 		);
 		axios
-			.get(serverUrl + "get/messages")
+			.get(serverUrl + "get/messages", {
+				params: {
+					userId: localStorage.getItem('user_id')
+				}
+			})
 			.then((response) => {
 				console.log("response", response);
 				if (response.status === 200) {
 					console.log("response", response.data.length);
-
-					localStorage.setItem("messagedata", JSON.stringify(response.data));
+					payload = JSON.parse(response.data);
+					dispatch(updateMessages(payload));
+					localStorage.setItem("messagedata", (response.data));
 				}
 			})
 			.catch((error) => {
@@ -59,4 +69,17 @@ const Message = () => {
 	);
 };
 
+const mapDispatchToProps = (dispatch) => {
+	return {
+		updateMessages: (payload) => {
+			dispatch(
+				updateMessages({
+					type: updateMessageList,
+					payload,
+				})
+			);
+		},
+	};
+};
+//export default connect(null, mapDispatchToProps)(Message);
 export default Message;

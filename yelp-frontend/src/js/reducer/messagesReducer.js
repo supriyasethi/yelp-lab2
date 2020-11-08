@@ -1,8 +1,8 @@
 const { updateMessageList } = require("../actionconstants/action-types");
 
 const defaultState = {
-	messages: [{
-		message: [],
+	msginfo: [{
+		messages: [],
         user: "",
         userid: "",
         restaurant: "",
@@ -17,7 +17,7 @@ const messagesReducer = (state = defaultState, action) => {
 		case updateMessageList: {            
 			return {
                 ...state,
-                messages: { ...state.messages, ...action.payload },
+                msginfo: { ...state.msginfo, ...action.payload },
                 //   return Object.assign(state, action.payload);
               };
         }

@@ -96,7 +96,7 @@ export function Searchbar() {
 				}
 			})
 			.catch((error) => {
-				console.log("error", error.response);
+				console.log("error", error);
 			});
 	}
 
@@ -163,45 +163,42 @@ export function Searchbar() {
 				</div>
 			</div>
 			<div className={classes.list}>
-			<div>{state.header}</div>
-					
-				<List>		
-				<div>			
-						{newRestaurant.map((listitem) => (
-							<ListItem alignItems='flex-start' key={listitem._id}>
-								<ListItemAvatar>
-									<Avatar alt='Remy Sharp' src={logo} />
-								</ListItemAvatar>
-								<ListItemText
-									primary={listitem.dishname}
-									secondary={
-										<React.Fragment>
-											<div>
-												<Typography
-													component='span'
-													variant='body2'
-													className={classes.inline}
-													color='textPrimary'>
-													Price:$
-												</Typography>
-												{listitem.price}
-											</div>
-											<div>
-												<Typography
-													component='span'
-													variant='body2'
-													className={classes.inline}
-													color='textPrimary'>
-													Ingredients:
-												</Typography>
-												{listitem.ingredients}
-											</div>
-										</React.Fragment>
-									}
-								/>
-							</ListItem>
-						))}
-					</div>
+				<div>{state.header}</div>
+				<List>
+					{newRestaurant.map((listitem) => (
+						<ListItem alignItems='flex-start' key={listitem._id}>
+							<ListItemAvatar>
+								<Avatar alt='Remy Sharp' src={logo} />
+							</ListItemAvatar>
+							<ListItemText
+								primary={listitem.dishname}
+								secondary={
+									<React.Fragment>
+										<div>
+											<Typography
+												component='span'
+												variant='body2'
+												className={classes.inline}
+												color='textPrimary'>
+												Price:$
+											</Typography>
+											{listitem.price}
+										</div>
+										<div>
+											<Typography
+												component='span'
+												variant='body2'
+												className={classes.inline}
+												color='textPrimary'>
+												Ingredients:
+											</Typography>
+											{listitem.ingredients}
+										</div>
+									</React.Fragment>
+								}
+							/>
+						</ListItem>
+					))}
 				</List>
 				<Divider />
 			</div>

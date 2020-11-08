@@ -10,6 +10,7 @@ import SendIcon from "@material-ui/icons/Send";
 import Avatar from "@material-ui/core/Avatar";
 import axios from "axios";
 import serverUrl from "../../config.js";
+import { connect, useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -30,20 +31,21 @@ function MessageBody() {
 
     let [textMessage, setTextMessage] = useState('');
 	let [messagedisplay, setMessageDisplay] = useState([]);
-	let messageInfo = JSON.parse(localStorage.getItem("messagedata"));
-	console.log(messageInfo);
+	let messageInfo = localStorage.getItem("messagedata");
+	let messages_data = JSON.parse(messageInfo);
+	console.log(messages_data);
 	const classes = useStyles();
 
 	function handleClick(id) {
-		for (var i = 0; i < messageInfo.length; i++) {
-			if (messageInfo[i].id === id) {
+		for (var i = 0; i < messages_data.length; i++) {
+			if (messages_data[i].id === id) {
 				console.log("inside if");
-                setMessageDisplay(messageInfo[i].messages);
-                localStorage.setItem('messageId', messageInfo[i].id);
-                localStorage.setItem('uid', messageInfo[i].userid);
-                localStorage.setItem('user', messageInfo[i].user);
-                localStorage.setItem('resid', messageInfo[i].restaurantid);
-                localStorage.setItem('res', messageInfo[i].restaurant);
+                setMessageDisplay(messages_data[i].messages);
+                localStorage.setItem('messageId', messages_data[i].id);
+                localStorage.setItem('uid', messages_data[i].userid);
+                localStorage.setItem('user', messages_data[i].user);
+                localStorage.setItem('resid', messages_data[i].restaurantid);
+                localStorage.setItem('res', messages_data[i].restaurant);
 			}
 		}
     }
@@ -87,8 +89,8 @@ function MessageBody() {
         <Paper style={{ margin: 16, padding: 16 }}>
 		<Grid container direction='row'>
 			<Grid xs={12} sm={3}>
-				<List className={classes.root}>
-					{messageInfo.map((listitem) => (
+			<List className={classes.root}>
+					{messages_data.map((listitem) => (
 						<div>
 							<ListItem alignItems='flex-start' key={listitem.id}>
 								<ListItemAvatar>
@@ -160,4 +162,13 @@ function MessageBody() {
 	);
 }
 
-export default MessageBody;
+const mapStateToProps = (state) => {
+	console.log(state);
+	const messageData = state.messageReducer;
+	return {
+		messageData,
+	};
+};
+
+export default connect(mapStateToProps, null)(MessageBody);
+//export default MessageBody;

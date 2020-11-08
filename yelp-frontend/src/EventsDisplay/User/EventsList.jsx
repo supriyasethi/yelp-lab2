@@ -42,19 +42,21 @@ function EventsList({ data }) {
 		sortFlag: false,
 	});
 
-	useEffect(() => {
+	useEffect( async () => {
 		var newEvent = [];
 		axios.defaults.withCredentials = true;
-		axios
+		await axios
 			.get(serverUrl + "get/events")
 			.then((response) => {
 				if (response.status === 200) {
+					console.log('response', JSON.parse(response.data));
 					setState({
 						authFlag: true,
-						events: response.data,
+						events: [...state.events, JSON.parse(response.data)]
 					});
 				}
-				console.log("events array", state.events);
+				newEvent = state.events;
+				console.log("events array", newEvent);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -77,7 +79,7 @@ function EventsList({ data }) {
 				//update the state with the response data
 				setState({
 					authFlag: true,
-					events: response.data,
+					events:  [...state.events, JSON.parse(response.data)]
 				});
 			});
 	}
@@ -195,7 +197,8 @@ function EventsList({ data }) {
 					SortbyDate Desc
 				</Button>
 			</div>
-			<List>
+			{state.events.length > 0? 
+			<List>				
 				{state.events.map((listitem) => (
 					<ListItem alignItems='flex-start' key={listitem._id}>
 						<Divider />
@@ -252,6 +255,7 @@ function EventsList({ data }) {
 					</ListItem>
 				))}
 			</List>
+			: null}
 		</div>
 	);
 }
