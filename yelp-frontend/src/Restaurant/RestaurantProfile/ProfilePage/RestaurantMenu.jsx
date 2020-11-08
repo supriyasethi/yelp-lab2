@@ -32,16 +32,12 @@ function RestaurantMenu(restaurantData) {
 	const[currentPage, setCurrentPage] = useState(1);
 	const[postsPerPage] = useState(10);
 	let restaurantMenu = [];
+	
 	 useEffect(() => {
-
-		const fetchMenu = async () => {
-		 restaurantMenu = await restaurantData.restaurantData.restaurant.Menu;
-		setMenu(restaurantMenu);	
-		}
-		fetchMenu();   
+		setMenu(JSON.parse(localStorage.getItem('RestaurantMenu')));		
 	},[]);
 
-	console.log('menu', restaurantMenu);
+	console.log('menu', menu);
 	//Get Current posts
 	const indexofLastPost = currentPage * postsPerPage;
 	const indexofFirstPost = indexofLastPost - postsPerPage;
@@ -70,14 +66,7 @@ function RestaurantMenu(restaurantData) {
 		
 	//   };
 
-	//  const onPageClick = (e) => {
-	// 	// console.log('Page Clicked:', e.selected);
-	// 	commonFetch(e.selected);
-	//   };
 
-	//   useEffect(() => {
-	// 	commonFetch();
-	//   },[]);
 	
 	const classes = useStyles();
 
@@ -99,7 +88,7 @@ function RestaurantMenu(restaurantData) {
 			</div>
 
 			<List>
-				{restaurantMenu.map((listitem) => (
+				{menu.map((listitem) => (
 					<ListItem alignItems='flex-start' key={listitem._id}>
 						<ListItemAvatar>
 							<Avatar alt='Remy Sharp' src={logo} />

@@ -31,6 +31,7 @@ function UserProfile() {
 				},
 			})
 			.then((response) => {
+				console.log('response', response);
 				if (response.status === 200) {
 					console.log("response", response.data);
 					//update the state with the response data
@@ -52,6 +53,12 @@ function UserProfile() {
 						Reviews: response.data.reviews,
 						Events: response.data.events,
 					};
+					localStorage.setItem('user_firstname',response.data.firstname );
+					localStorage.setItem('user_lastname',response.data.lastname );
+					localStorage.setItem('user_city',response.data.city );
+					localStorage.setItem('user_state',response.data.state);
+					localStorage.setItem('user_yelpingsince',response.data.yelpingsince );
+					localStorage.setItem('user_thingsilove',response.data.thingsilove );					
 					console.log('user payload', payload);
 					dispatch(getUserProfile(payload));
 				}

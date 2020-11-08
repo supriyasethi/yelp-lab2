@@ -38,6 +38,8 @@ const useStyles = makeStyles(() => ({
 }));
 
 function UserInfo(userData) {
+
+	let [profilepic, setProfilePic] = useState('');
 	let history = useHistory();
 
 	let userInfo = userData.userData;

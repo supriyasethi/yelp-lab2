@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 function ProfileInfo(userData) {
 	const dispatch = useDispatch();
 	let userInfo = userData.userData;
-	const [picture, setpicture] = useState();
+	const [selectedFile, setSelectedFile] = useState(null);
 	const [picname, setpicname] = useState("Your Profile Photo");
 	const [uploadedFile, setUploadedFile] = useState({});
 	const [state, setState] = React.useState({
@@ -79,12 +79,12 @@ function ProfileInfo(userData) {
 	let history = useHistory();
 	const classes = useStyles();
 
-	function handleFileSelected(e) {
-		console.log(e.target.files[0]);
-		setpicture(e.target.files[0]);
+	// function handleFileSelected(e) {
+	// 	console.log(e.target.files[0]);
+	// 	setpicture(e.target.files[0]);
 
-		//setpicture(URL.createObjectURL(e.target.files[0]));
-	}
+	// 	//setpicture(URL.createObjectURL(e.target.files[0]));
+	// }
 	var user = localStorage.getItem("user_id");
 
 	function handleChange(e) {
@@ -96,35 +96,69 @@ function ProfileInfo(userData) {
 			userid: user,
 		});
 	}
-	const onChange = (e) => {
-		setpicture(e.target.files[0]);
-		setpicname(e.target.files[0].name);
+	// const onChange = (e) => {
+	// 	setpicture(e.target.files[0]);
+	// 	setpicname(e.target.files[0].name);
+	// };
+
+	function onFileChange(event) {
+		console.log('nside file change');
+		setSelectedFile({ selectedFile: event.target.files[0] });
+		console.log(selectedFile);
+	}
+
+	const uploadPicture = (e) => {
+		const formData = new FormData();
+		formData.append("myFile", selectedFile, selectedFile.name);
+
+		e.preventDefault();
+		axios.defaults.withCredentials = true;
+		axios
+			.post(serverUrl + "upload", formData)
+			.then((response) => {
+				console.log("Status code: ", response.status);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 	};
 
-	const uploadPicture = async (e) => {
-		// const data = new FormData();
-		// data.append("image", picture);
-		// e.preventDefault();
-		// axios.defaults.withCredentials = true;
-		// try {
-		// 	const res = await axios.post(httpURL + "/upload", data, {
-		// 		headers: {
-		// 			"Content-Type": "multipart/form-data",
-		// 		},
-		// 	});
-		// 	console.log("res", res.data.filePath);
-		// 	const { fileName, filePath } = res.data;
-		// 	console.log("filePath", filePath);
-		// 	setUploadedFile({ fileName, filePath });
-		// 	console.log("uploadedfle", uploadedFile);
-		// } catch (err) {
-		// 	if (err.response.status === 500) {
-		// 		console.lg("There was a problem with the sever");
-		// 	} else {
-		// 		console.log(err.response.data.msg);
-		// 	}
-		// }
-	};
+	function fileData() {
+		if (selectedFile) {
+			return (
+				<div>
+					<h2>File Details:</h2>
+					<p>File Name: {selectedFile.name}</p>
+					<p>File Type: {selectedFile.type}</p>
+				</div>
+			);
+		} else {
+			return (
+				<div>
+					<br />
+					<h4>Choose before Pressing the Upload button</h4>
+				</div>
+			);
+		}
+	}
+	// , {
+	// 		headers: {
+	// 			"Content-Type": "multipart/form-data",
+	// 		},
+	//});
+
+	// 	console.log("res", res.data.filePath);
+	// 	const { fileName, filePath } = res.data;
+	// 	console.log("filePath", filePath);
+	// 	setUploadedFile({ fileName, filePath });
+	// 	console.log("uploadedfle", uploadedFile);
+	// } catch (err) {
+	// 	if (err.response.status === 500) {
+	// 		console.lg("There was a problem with the sever");
+	// 	} else {
+	// 		console.log(err.response.data.msg);
+	// 	}
+	// }
 
 	function handleSaveChanges() {
 		console.log(state);
@@ -146,7 +180,7 @@ function ProfileInfo(userData) {
 					userInfo.Yelpingsince = state.yelpingsince;
 					userInfo.Findmein = state.findmein;
 					let payload = userInfo;
-					console.log('payload in rofileinfo', payload);
+					console.log("payload in rofileinfo", payload);
 					dispatch(getUserProfile(payload));
 					history.push("/userp");
 				}
@@ -177,33 +211,16 @@ function ProfileInfo(userData) {
 				<Divider />
 			</div>
 			<div>
-				<form onSubmit={uploadPicture}>
-					<div className='custom-file mb-4'>
-						<input
-							type='file'
-							className='custom-file-input'
-							id='customFile'
-							onChange={onChange}
-						/>
-					</div>
-
+				<div className='custom-file mb-4'>
 					<input
-						type='submit'
-						value='Upload'
-						className='btn btn-primary btn-block mt-4'
+						type='file'
+						className='custom-file-input'
+						id='customFile'
+						onChange={onFileChange}
 					/>
-				</form>
-				{uploadedFile ? (
-					<div className='row mt-5'>
-						<div className='col-md-6 m-auto'>
-							<img
-								style={{ width: "100%" }}
-								src={uploadedFile.filePath}
-								alt=''
-							/>
-						</div>
-					</div>
-				) : null}
+					<button onClick={uploadPicture}>Upload!</button>
+				</div>
+				{fileData}
 			</div>
 			<div>
 				<Typography

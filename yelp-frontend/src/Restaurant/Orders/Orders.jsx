@@ -108,7 +108,7 @@ function Orders(restaurantData) {
 		axios
 			.post(serverUrl + "update/orders", orderInfo)
 			.then((response) => {
-				console.log("Status code: ", response.status);
+				console.log("Status code: ", response);
 				if (response.status === 200) {
 					setmsg(<p>Order Updated</p>);
 					for (var i = 0; i < restaurantData.length; i++) {

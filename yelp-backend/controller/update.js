@@ -40,11 +40,11 @@ function updateUser(req, res) {
 	}
 }
 
-function updateBiz(req, res) {
+async function updateBiz(req, res) {
 	console.log("Inside Update Restaurant Profile Post Request");
 	console.log("Req Body : ", req.body);
 	try {
-		Restaurants.findOneAndUpdate(
+		await Restaurants.findOneAndUpdate(
 			{ _id: req.body.restaurantId },
 			{
 				$set: {
@@ -93,7 +93,8 @@ async function updateOrders(req, res) {
 		const userPromise = await Users.findOneAndUpdate(query2, update);
 		return res.status(200).json({ restaurantPromise, userPromise });
 	} catch (error) {
-		return res.status(500).json(err);
+		console.log(error);
+		return res.status(500).json(error);
 	}
 }
 

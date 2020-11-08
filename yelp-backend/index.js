@@ -3,14 +3,15 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+const multer = require('multer');
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var cors = require('cors');
-var redis = require('redis');
-var connectRedis = require('connect-redis');
+// var redis = require('redis');
+// var connectRedis = require('connect-redis');
 var auth = require('./middleware/auth');
 var fileupload = require('express-fileupload');
-const { mongoDB } = require('./utils/config');
+const { mongoDB, secret, frontendURL } = require('./utils/config');
 const mongoose = require('mongoose');
 
 app.use(fileupload());
@@ -18,22 +19,22 @@ app.use(fileupload());
 //if you run behind a proxy (eg nginx)
 //app.set("trust proxy", 1);
 
-var RedisStore = connectRedis(session);
-var redisClient = redis.createClient({
-  port : 6379,
-  host: 'localhost'
-})
+// var RedisStore = connectRedis(session);
+// var redisClient = redis.createClient({
+//   port : 6379,
+//   host: 'localhost'
+// })
 
 app.set('view engine', 'ejs');
 
 //use cors to allow cross origin resource sharing
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: frontendURL, credentials: true }));
 //app.use(cors({ origin: true, credentials: true }));
 
 //use express session to maintain session data
 app.use(session({
-    store               : new RedisStore({client: redisClient}),
-    secret              : 'cmpe273_kafka_passport_mongo',
+    //store               : new RedisStore({client: redisClient}),
+    secret              : secret,
     resave              : true, // Forces the session to be saved back to the session store, even if the session was never modified during the request
     saveUninitialized   : true, // Force to save uninitialized session to db. A session is uninitialized when it is new but not modified.
     duration            : 60 * 60 * 1000,    // Overall duration of Session : 30 minutes : 1800 seconds
@@ -52,12 +53,10 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require('connect').bodyParser());
 
-
-
 //Allow Access Control
 app.use(function(req, res, next) {
     //res.setHeader('Access-Control-Allow-Origin', 'http://54.219.75.46:3000');
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Origin', frontendURL);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
@@ -97,20 +96,28 @@ app.use("/update", Update);
 app.use("/insert", Insert);
 app.use("/get", Fetch);  
 
-app.post('/upload', (req, res) => {
-  console.log('request', req.files);
-  if(req.files === null) {
-    return res.status(400).json({msg: 'No file uploaded'});
+// SET STORAGE
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now())
   }
+})
+ 
+var upload = multer({ storage: storage })
+
+
+app.post('/upload', upload.single('myFile'), (req, res, next) => {
+  const file = req.file
+  if (!file) {
+    const error = new Error('Please upload a file')
+    error.httpStatusCode = 400
+    return next(error)
+  }
+    res.send(file)
   
-  const file = req.files.image;
-  file.mv(`${__dirname}/uploads/${file.name})`, err => {
-    if(err) {
-      console.error(err);
-      return res.status(500).send(err);
-    }
-    res.json({fileName: file.name, filePath: '../../yelp-backends/uploads/${file.name}'})
-  })
 })
 
   //start your server on port 3001

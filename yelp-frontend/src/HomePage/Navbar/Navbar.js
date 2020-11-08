@@ -12,6 +12,7 @@ const Navbar = () => {
 	}
 
 	function handleSignupClick() {
+		console.log('inside handle signup click');
 		history.push('/signup');
     }
     

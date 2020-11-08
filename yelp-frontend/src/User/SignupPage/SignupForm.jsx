@@ -3,6 +3,7 @@ import {Button, TextField, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import serverUrl from "../../config.js";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 const SignupForm = () => {
 
     //let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+	//let httpURL = "http://54.219.75.46:3001";
     let redirect = '';
     //const dispatch = useDispatch();
     let history = useHistory();
@@ -61,7 +62,7 @@ const SignupForm = () => {
         console.log('state', state);
         
          axios.defaults.withCredentials = true;
-         axios.post(httpURL+"/signup/user", state)
+         axios.post(serverUrl+"signup/user", state)
          .then(response => {
              console.log("Status code: ", response.status);
              if(response.status === 200) {

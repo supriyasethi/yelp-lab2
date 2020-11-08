@@ -31,6 +31,7 @@ function MessageBody() {
     let [textMessage, setTextMessage] = useState('');
 	let [messagedisplay, setMessageDisplay] = useState([]);
 	let messageInfo = JSON.parse(localStorage.getItem("messagedata"));
+	console.log('messgeInfo', messageInfo);
 	const classes = useStyles();
 
 	function handleClick(id) {
@@ -86,7 +87,7 @@ function MessageBody() {
         <Paper style={{ margin: 16, padding: 16 }}>
 		<Grid container direction='row'>
 			<Grid xs={12} sm={3}>
-				<List className={classes.root}>
+			<List className={classes.root}>
 					{messageInfo.map((listitem) => (
 						<div>
 							<ListItem alignItems='flex-start' key={listitem.id}>

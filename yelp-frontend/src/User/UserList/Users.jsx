@@ -113,10 +113,10 @@ function Users() {
 			.post(serverUrl + "insert/userfollow", userInfo)
 			.then((response) => {
 				console.log("searchUser", response);
-				setUserFollowMsg(response.data.message);
+				if (response.status === 200) setUserFollowMsg(response.data);
 			})
 			.catch((error) => {
-				console.log(error.status);
+				console.log(error);
 				//setUserFollowMsg(error);
 			});
 	}

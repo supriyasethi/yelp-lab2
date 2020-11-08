@@ -14,6 +14,8 @@ import EventIcon from "@material-ui/icons/Event";
 import axios from "axios";
 import { Typography } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
+import serverUrl from "../../../config.js";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -49,8 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UserDetails() {
-	//let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+		
 	const classes = useStyles();
 	let history = useHistory();
 	let [username, setUsername] = useState("");
@@ -83,22 +84,30 @@ export default function UserDetails() {
 	}
 	useEffect(() => {
 		const userId = localStorage.getItem("userId");
-		axios
-			.get(httpURL + "/get/userp", {
-				params: {
-					userId: userId,
-				},
-			})
-			.then((response) => {
-				//    update the state with the response data
-				console.log(response);
-				setUsername(
-					response.data[0].first_name + " " + response.data[0].last_name
-				);
-				setlocation(response.data[0].city + ", " + response.data[0].state);
-				setyelpingsince(response.data[0].yelping_since);
-				setthingsilove(response.data[0].things_i_love);
-			});
+		let firstname =	localStorage.getItem('user_firstname');
+		let lastname = localStorage.getItem('user_lastname');
+		let city = localStorage.getItem('user_city' );
+		let state  = localStorage.getItem('user_state');
+		setUsername(firstname + ' ' + lastname);
+		setlocation(city + ', ' +state);
+		setyelpingsince(localStorage.getItem('user_yelpingsince'));
+		setthingsilove(localStorage.getItem('user_thingsilove'));
+		// axios
+		// 	.get(serverUrl + "get/userp", {
+		// 		params: {
+		// 			userId: userId,
+		// 		},
+		// 	})
+		// 	.then((response) => {
+		// 		//    update the state with the response data
+		// 		console.log(response);
+		// 		setUsername(
+		// 			response.data[0].first_name + " " + response.data[0].last_name
+		// 		);
+		// 		setlocation(response.data[0].city + ", " + response.data[0].state);
+		// 		setyelpingsince(response.data[0].yelping_since);
+		// 		setthingsilove(response.data[0].things_i_love);
+		// 	});
 	}, []);
 
 	return (

@@ -1,10 +1,12 @@
 "use strict";
 const bcrypt = require("bcrypt");
 var passwordHash = require("password-hash");
-const User = require("../models/User");
+//const User = require("../models/User");
+const User = require("../models/User")
 const Restaurant = require("../models/Restaurant");
 
 function handle_request(msg, callback) {
+	let response = {};
 	switch (msg.api) {
 		case "signup_user": {
 			console.log("Inside Signup Post Request");
@@ -79,8 +81,8 @@ function handle_request(msg, callback) {
 						response.data = "Network Error";
 						callback(null, response);
 					}
-					if (user) {
-						console.log("inside user", user);
+					if (bizuser) {
+						console.log("inside user", bizuser);
 						response.status = 400;
 						response.data = "Email Already Exists";
 						callback(null, response);

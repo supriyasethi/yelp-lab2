@@ -4,6 +4,7 @@ const Restaurants = require("../../kafka-backend/models/Restaurant");
 
 async function handle_request(msg, callback) {
 	//function updateUser(req, res) {
+		let response = {};
 	switch (msg.api) {
 		case "update_userprofile": {
 			console.log("Inside Update User Profile Post Request");
@@ -77,7 +78,7 @@ async function handle_request(msg, callback) {
 						if (error) {
 							console.log("error", error);
 							response.status = 500;
-							response.data = "Network Error";
+							response.data = error;
 							callback(null, response);
 							//res.json(500).send(error);
 						} else {
@@ -99,7 +100,7 @@ async function handle_request(msg, callback) {
 			break;
 		}
 
-		case "update_order": {
+		case "update_orders": {
 			//async function updateOrders(req, res) {
 			console.log("Inside Update Order Profile Post Request");
 			console.log("Req Body : ", msg);
@@ -121,9 +122,15 @@ async function handle_request(msg, callback) {
 					update
 				);
 				const userPromise = await Users.findOneAndUpdate(query2, update);
-				return res.status(200).json({ restaurantPromise, userPromise });
+				response.status = 200;
+				response.data = { restaurantPromise, userPromise };
+				return callback(null, response);
+				//return res.status(200).json({ restaurantPromise, userPromise });
 			} catch (error) {
-				return res.status(500).json(err);
+				response.status = 500;
+				response.data = error;
+				return callback(null, error);
+				//return res.status(500).json(err);
 			}
 			break;
 		}

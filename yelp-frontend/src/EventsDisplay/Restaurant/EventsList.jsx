@@ -39,10 +39,12 @@ function EventsList(restaurantData) {
             })
         .then((response) => {
             //update the state with the response data			
-			if (response.status === 200) {		
+			if (response.status === 200) {	
+				console.log(JSON.parse(response.data));
 				setState({
 					authFlag: true,
-					events: response.data
+					//events: [...this.state.events, JSON.parse(response.data)]
+					events: JSON.parse(response.data)
 				})
 			}			
 		})

@@ -8,6 +8,25 @@ var Update = require('./controller/update.js');
 var Fetch = require('./controller/fetch.js');
 var config = require('./utils/config.js');
 //var Books = require('./services/books.js');
+const { mongoDB} = require('./utils/config');
+const mongoose = require('mongoose');
+
+var options = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    poolSize: 500,
+    bufferMaxEntries: 0
+};
+
+mongoose.connect(mongoDB, options, (err, res) => {
+    if (err) {
+        console.log(err);
+        console.log(`MongoDB Connection Failed`);
+    } else {
+        console.log(`MongoDB Connected`);
+    }
+});
+
 
 function handleTopicRequest(topic_name,fname){
     //var topic_name = 'root_topic';

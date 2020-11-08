@@ -61,6 +61,7 @@ const RestaurantProfile = () => {
 						Reviews: response.data.reviews,
 						Events: response.data.events,
 					};
+					localStorage.setItem('RestaurantMenu', JSON.stringify(response.data.menu));
 					dispatch(getProfile(payload));
 					setRestaurantname(response.data.name);
 				}

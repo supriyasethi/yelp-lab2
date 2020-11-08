@@ -1,9 +1,12 @@
 "use strict";
 const express = require("express");
 const router = express.Router();
-var config = require("../utils/config.js");
-//const {loginUser, loginBiz} = require('../controller/login');
+var config = require("../utils/config");
+const { loginUser, loginBiz } = require("../controller/login");
 var kafka = require("../kafka/client");
+const jwt = require("jsonwebtoken");
+const { secret } = require("../utils/config");
+const { auth } = require("../utils/passport");
 
 //Route to handle Post Request Call
 router.post("/user", async (req, res) => {
@@ -23,10 +26,24 @@ router.post("/user", async (req, res) => {
 			res.end();
 		} else {
 			console.log("inside else of request");
+			if (results.status === 200) {
+				const token = jwt.sign(results.data, secret, {
+					expiresIn: 1008000,
+				});
 
-			res.status(results.status);
-			// res.json(results.data);
-			res.end(results.data);
+				let response = {
+					token: "JWT " + token,
+					message: "Login Successful",
+				};
+
+				res.status(results.status);
+				//res.json(results.data);
+				res.end(JSON.stringify(response));
+			} else {
+				res.status(results.status);
+				//res.json(results.data);
+				res.end(results.data);
+			}
 		}
 		return res;
 	});
@@ -52,10 +69,23 @@ router.post("/biz", async (req, res) => {
 			res.end();
 		} else {
 			console.log("inside else of request");
+			if (results.status === 200) {
+				const token = jwt.sign(results.data, secret, {
+					expiresIn: 1008000,
+				});
 
-			res.status(results.status);
-			// res.json(results.data);
-			res.end(results.data);
+				let response = {
+					token: "JWT " + token,
+					message: "Login Successful",
+				};
+				res.status(results.status);
+				// res.json(results.data);
+				res.end(JSON.stringify(response));
+			} else {
+				res.status(results.status);
+				//res.json(results.data);
+				res.end(results.data);
+			}
 		}
 		return res;
 	});

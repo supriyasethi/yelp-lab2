@@ -10,6 +10,7 @@ auth();
 
 async function handle_request(msg, callback) {
 	//async function loginUser(req,res) {
+		let response = {};
 	switch (msg.api) {
 		case "login_user": {
 			console.log("Inside Login Post Request");
@@ -19,32 +20,29 @@ async function handle_request(msg, callback) {
 				const user = await Users.findOne({
 					"login.username": message.username,
 				});
+				if(user) {
 				if (passwordHash.verify(message.password, user.login.password)) {
 					const payload = {
 						_id: user._id,
 						username: user.login.username,
 						firstname: user.firstname,
 						lastname: user.lastname,
-					};
-					const token = jwt.sign(payload, secret, {
-						expiresIn: 1008000,
-					});
+					};						
 					response.status = 200;
-					response.data = {
-						token: "JWT " + token,
-						message: "Login Successful",
-					};
+					response.data = payload;
 					callback(null, response);
 					// res
 					// 	.status(200)
 					// 	.send({ token: "JWT " + token, message: "Login Successful" });
-				} else {
+				} }
+				else {
 					response.status = 401;
 					response.data = "Invalid Credentials";
 					callback(null, response);
 					//res.status(401).json({ message: "Invalid Credentials" });
 				}
 			} catch (error) {
+				console.log(error);
 				response.status = 500;
 				response.data = "Network Error";
 				callback(null, response);
@@ -68,10 +66,7 @@ async function handle_request(msg, callback) {
 						expiresIn: 1008000,
 					});
 					response.status = 200;
-					response.data = {
-						token: "JWT " + token,
-						message: "Login Successful",
-					};
+					response.data = payload;					
 					callback(null, response);
 					// res
 					// 	.status(200)

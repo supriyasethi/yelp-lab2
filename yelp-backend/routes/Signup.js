@@ -1,7 +1,7 @@
 "use strict";
 const express = require("express");
 const router = express.Router();
-var config = require("../utils/config.js");
+var config = require("../utils/config");
 //const {signupUser, signupBiz} = require('../controller/signup');
 var kafka = require("../kafka/client");
 

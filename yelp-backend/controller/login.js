@@ -12,17 +12,24 @@ async function loginUser(req,res) {
     console.log("Inside Login Post Request");  
   console.log("Req Body : ",req.body);    
   try {
-		const user = await Users.findOne({ "login.username": req.body.username});		
+		const user = await Users.findOne({ "login.username": req.body.username});
+		console.log('user', user);
+		if(user) {
 		if(passwordHash.verify(req.body.password, user.login.password)) {              			
 			const payload = { _id: user._id, username: user.login.username, firstname: user.firstname, lastname: user.lastname};			
             const token = jwt.sign(payload, secret, {
                 expiresIn: 1008000
 			});
             res.status(200).send({token: "JWT " + token, message: "Login Successful"});			
-		}
+		} 
 		else res.status(401).json({message: "Invalid Credentials"});
+		}
+		else {
+			res.status(401).json({message: "User is not registered!"});
+		}
 	}	
-	catch(error) {			
+	catch(error) {		
+		console.log(error);
 		res.status(500).send(error);
 	}
 

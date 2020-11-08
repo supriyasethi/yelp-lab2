@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, { useRef } from "react";
 import styles from "./Searchbar.module.css";
 import axios from "axios";
 import {
@@ -16,7 +16,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import { makeStyles } from "@material-ui/styles";
 import { useHistory } from "react-router-dom";
-import cookie from 'react-cookies';
+import cookie from "react-cookies";
 import serverUrl from "../config.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -30,23 +30,22 @@ const useStyles = makeStyles((theme) => ({
 		marginTop: 300,
 	},
 	mapStyles: {
-		width: '100%',
-  		height: '100%'
-	}
+		width: "100%",
+		height: "100%",
+	},
 }));
 
 export function Searchbar() {
-
 	let history = useHistory();
 	const mapRef = useRef(null);
-	const classes = useStyles();	
+	const classes = useStyles();
 	let rows = [];
 
 	let [state, setState] = React.useState({
 		find: "",
 		where: "",
-        restaurants: [],
-        header:""
+		restaurants: [],
+		header: "",
 	});
 
 	function handleFindChange(e) {
@@ -62,7 +61,7 @@ export function Searchbar() {
 
 	function handleSearch() {
 		axios
-			.get(serverUrl+"get/home", {
+			.get(serverUrl + "get/home", {
 				params: {
 					keyword: state.find,
 					location: state.where,
@@ -70,25 +69,30 @@ export function Searchbar() {
 			})
 			.then((response) => {
 				console.log("Status code: ", response.status);
-				if (response.status === 200) {					
+				if (response.status === 200) {
 					console.log(response);
 					if (response.data.length > 0) {
-						newRestaurant = response.data;						
+						newRestaurant = response.data;
 						console.log("newRestaurant", newRestaurant);
-						setState({    
-							restaurants: newRestaurant,                        
-                            header: (<Typography 
-                            style={{color:'#d32323', fontWeight:"bold", fontSize:"18px"}}								
-                            component='span'
-                            variant='body2'
-                            className={classes.inline}
-                            color='textPrimary'>
-                            Restaurants List
-                                </Typography>)
+						setState({
+							restaurants: newRestaurant,
+							header: (
+								<Typography
+									style={{
+										color: "#d32323",
+										fontWeight: "bold",
+										fontSize: "18px",
+									}}
+									component='span'
+									variant='body2'
+									className={classes.inline}
+									color='textPrimary'>
+									Restaurants List
+								</Typography>
+							),
 						});
 						console.log("restaurants", state.restaurants);
 					}
-					
 				}
 			})
 			.catch((error) => {
@@ -97,12 +101,11 @@ export function Searchbar() {
 	}
 
 	function handleOrderRequest(e, id) {
-		localStorage.setItem('restaurantId', id);
-		if(cookie.load('cookie')) {
-		history.push('/bizdisplay');}
-		else history.push('/login/user');
+		localStorage.setItem("restaurantId", id);
+		if (cookie.load("cookie")) {
+			history.push("/bizdisplay");
+		} else history.push("/login/user");
 	}
-
 
 	return (
 		<div>
@@ -160,51 +163,48 @@ export function Searchbar() {
 				</div>
 			</div>
 			<div className={classes.list}>
-				<List>
-                <div>
-                    {state.header}
-                        </div>
-                        
+			<div>{state.header}</div>
+					
+				<List>		
+				<div>			
 						{newRestaurant.map((listitem) => (
-					<ListItem alignItems='flex-start' key={listitem._id}>
-						<ListItemAvatar>
-							<Avatar alt='Remy Sharp' src={logo} />
-						</ListItemAvatar>
-						<ListItemText
-							primary={listitem.dishname}
-							secondary={
-								<React.Fragment>
-									<div>
-										<Typography
-											component='span'
-											variant='body2'
-											className={classes.inline}
-											color='textPrimary'>
-											Price:$
-										</Typography>
-										{listitem.price}
-									</div>
-									<div>
-										<Typography
-											component='span'
-											variant='body2'
-											className={classes.inline}
-											color='textPrimary'>
-											Ingredients:
-										</Typography>
-										{listitem.ingredients}
-									</div>
-				
-								</React.Fragment>
-							}
-						/>
-					</ListItem>
-				))}
-			</List>
-			<Divider />
+							<ListItem alignItems='flex-start' key={listitem._id}>
+								<ListItemAvatar>
+									<Avatar alt='Remy Sharp' src={logo} />
+								</ListItemAvatar>
+								<ListItemText
+									primary={listitem.dishname}
+									secondary={
+										<React.Fragment>
+											<div>
+												<Typography
+													component='span'
+													variant='body2'
+													className={classes.inline}
+													color='textPrimary'>
+													Price:$
+												</Typography>
+												{listitem.price}
+											</div>
+											<div>
+												<Typography
+													component='span'
+													variant='body2'
+													className={classes.inline}
+													color='textPrimary'>
+													Ingredients:
+												</Typography>
+												{listitem.ingredients}
+											</div>
+										</React.Fragment>
+									}
+								/>
+							</ListItem>
+						))}
+					</div>
+				</List>
+				<Divider />
 			</div>
-
-			
 		</div>
 	);
 }

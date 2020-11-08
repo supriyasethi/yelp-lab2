@@ -22,18 +22,23 @@ const Message = () => {
 	}
 	const classes = useStyles();
 	useEffect(() => {
+		
 		axios.defaults.withCredentials = true;
 		axios.defaults.headers.common["authorization"] = localStorage.getItem(
 			"token"
 		);
 		axios
-			.get(serverUrl + "get/messages")
+			.get(serverUrl + "get/messages", {
+				params: {
+					restaurantId: localStorage.getItem('restaurant_id')
+				}
+			})
 			.then((response) => {
 				console.log("response", response);
 				if (response.status === 200) {
 					console.log("response", response.data.length);
 
-					localStorage.setItem("messagedata", JSON.stringify(response.data));
+					localStorage.setItem("messagedata", response.data);
 				}
 			})
 			.catch((error) => {
