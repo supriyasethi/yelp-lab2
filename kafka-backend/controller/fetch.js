@@ -192,6 +192,52 @@ async function handle_request(msg, callback) {
 			break;
 		}
 
+		// case "fetch_menu": {
+		// 	let message = msg.data;
+		// 	//async function fetchUsersList(req, res) {
+		// 	console.log("Inside Menu get Get request");
+		// 	const restaurantId = message.restaurantId;
+		// 	const PageNo = message.PageNo;
+		// 	//const { SearchKey, PageNo } = url.parse(req.url, true).query;
+		// 	console.log(PageNo);
+		// 	let resultData = [];
+		// 	const menuResult = [];
+
+		// 	const menuResults = await Restaurants.find({ _id: restaurantId })
+		// 		.limit(5)
+		// 		.skip(PageNo * 5)
+		// 		.exec();
+		// 	console.log(menuResults.menu);
+		// 	for (var i = 0; i < menuResults.menu.length; i++) {
+		// 		count = count + 1;
+		// 	}
+		// 	//const count = await Restaurants.find().countDocuments({ _id: restaurantId });
+			
+		// 	const noOfPages = Math.ceil(count / 5);
+		// 	const tempObj = {};
+		// 	console.log('menuresults', menuResults);
+		// 	for (var i = 0; i < menuResults.menu.length; i++) {
+		// 		issearch = 1;
+		// 		tempObj.name = menuResults.name;
+		// 		tempObj.restauarantid = menuResults._id;
+		// 		// for (var j = 0; j < menuResults[i].menu.length; j++) {
+		// 		// 	console.log("inside j loop");					
+		// 			console.log(menuResults.menu[i].dishname);
+		// 			tempObj.dishname = menuResults.menu[i].dishname;
+		// 			tempObj.price = menuResults.menu[i].price;
+		// 		//}
+		// 	}
+		// 	menuResult.push(tempObj);
+		// 	resultData = [menuResult, count, noOfPages];
+		// 	console.log("data", menuResult);
+		// 	response.status = 200;
+		// 	response.data = resultData;
+		// 	callback(null, response);
+		// 	//res.status(200).json(menuData);
+
+		// 	break;
+		// }
+
 		case "fetch_bizp": {
 			let message = msg.data;
 			//async function fetchBiz(req, res) {
@@ -228,7 +274,7 @@ async function handle_request(msg, callback) {
 
 		case "fetch_event": {
 			let message = msg.data;
-			//async function fetchEvent(req, res) {
+
 			console.log("Inside event fetch request");
 			console.log(message.restaurantId);
 			const eventdata = [];
@@ -242,26 +288,14 @@ async function handle_request(msg, callback) {
 						response.status = 500;
 						response.data = error;
 						callback(null, response);
-						//res.json(500).send(error);
 					} else {
 						console.log(data);
 						for (let i = 0; i < data.length; i++) {
 							const tempObj = {};
-							//let formatdate = "";
+
 							tempObj.name = data[i].name;
 							tempObj.time = data[i].time;
-							// formatdate = data[i].date;
-							// let year = formatdate.getFullYear();
-							// let month = formatdate.getMonth() + 1;
-							// let dt = formatdate.getDate();
 
-							// if (dt < 10) {
-							// 	dt = "0" + dt;
-							// }
-							// if (month < 10) {
-							// 	month = "0" + month;
-							// }
-							// tempObj.date = year + "-" + month + "-" + dt;
 							tempObj.date = data[i].date;
 							tempObj.location = data[i].location;
 							tempObj.restaurantId = data[i].restaurantId;
@@ -273,10 +307,6 @@ async function handle_request(msg, callback) {
 						response.status = 200;
 						response.data = JSON.stringify(eventdata);
 						callback(null, response);
-						// res.writeHead(200, {
-						// 	"Content-Type": "application/json",
-						// });
-						// res.end(JSON.stringify(eventdata));
 					}
 				});
 			} catch (error) {
@@ -310,18 +340,6 @@ async function handle_request(msg, callback) {
 							let formatdate = "";
 							tempObj.name = data[i].name;
 							tempObj.time = data[i].time;
-							// formatdate = data[i].date;
-							// let year = formatdate.getFullYear();
-							// let month = formatdate.getMonth() + 1;
-							// let dt = formatdate.getDate();
-
-							// if (dt < 10) {
-							// 	dt = "0" + dt;
-							// }
-							// if (month < 10) {
-							// 	month = "0" + month;
-							// }
-							// tempObj.date = year + "-" + month + "-" + dt;
 							tempObj.date = data[i].date;
 							tempObj.location = data[i].location;
 							tempObj.restaurantId = data[i].restaurantId;
@@ -333,10 +351,6 @@ async function handle_request(msg, callback) {
 						response.status = 200;
 						response.data = JSON.stringify(eventdata);
 						callback(null, response);
-						// res.writeHead(200, {
-						// 	"Content-Type": "application/json",
-						// });
-						// res.end(JSON.stringify(eventdata));
 					}
 				});
 			} catch (error) {
@@ -344,7 +358,6 @@ async function handle_request(msg, callback) {
 				response.status = 500;
 				response.data = error;
 				callback(null, response);
-				//res.status(500).send(error);
 			}
 			break;
 		}

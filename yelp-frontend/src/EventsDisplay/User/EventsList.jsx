@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function EventsList({ data }) {
-	let history = useHistory();
+	let history = useHistory();	
 	let [eventmsg, seteventmsg] = useState();
 	let [searchkey, setsearchkey] = useState();
 	let [state, setState] = React.useState({
@@ -49,7 +49,7 @@ function EventsList({ data }) {
 			.get(serverUrl + "get/events")
 			.then((response) => {
 				if (response.status === 200) {
-					console.log('response', JSON.parse(response.data));
+					console.log('response', JSON.parse(response.data));					
 					setState({
 						authFlag: true,
 						events: [...state.events, JSON.parse(response.data)]
@@ -196,8 +196,7 @@ function EventsList({ data }) {
 					onClick={handleSortDesc}>
 					SortbyDate Desc
 				</Button>
-			</div>
-			{state.events.length > 0? 
+			</div>			
 			<List>				
 				{state.events.map((listitem) => (
 					<ListItem alignItems='flex-start' key={listitem._id}>
@@ -254,8 +253,7 @@ function EventsList({ data }) {
 						/>
 					</ListItem>
 				))}
-			</List>
-			: null}
+			</List>			
 		</div>
 	);
 }

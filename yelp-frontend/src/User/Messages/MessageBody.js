@@ -36,6 +36,12 @@ function MessageBody() {
 	console.log(messages_data);
 	const classes = useStyles();
 
+	useEffect(() => {
+		let messageInfo = localStorage.getItem("messagedata");
+	let messages_data = JSON.parse(messageInfo);
+	console.log(messages_data);
+	}, []);
+
 	function handleClick(id) {
 		for (var i = 0; i < messages_data.length; i++) {
 			if (messages_data[i].id === id) {
@@ -75,8 +81,8 @@ function MessageBody() {
 				if (response.status === 200) {					
 					//update the state with the response data
                     console.log("response", response);
-                    setMessageDisplay(messagedisplay => [...messagedisplay, msg]);
-                    setTextMessage('');
+                    setMessageDisplay(messagedisplay => [...messagedisplay, msgInfo]);
+					setTextMessage('');					
                 }
             })
             .catch((error) => {

@@ -11,6 +11,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 //import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import { connect, useDispatch } from "react-redux";
 
 
 const useStyles = makeStyles(() => ({
@@ -42,9 +43,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function Info() {
-	//let httpURL = "http://localhost:3001";
-	let httpURL = "http://54.219.75.46:3001";
+function Info(restaurantData) {
+	let restaurant = restaurantData.restaurantData.restaurant;
+	console.log(restaurant);
+	
 	let history = useHistory();
 	let [name, setname] = useState("");
 	let [address, setaddress] = useState("");
@@ -53,37 +55,41 @@ function Info() {
 	let [picutre, setpicture] = useState(null);
 
 	useEffect(() => {
-        const data = localStorage.getItem('restaurantId');
-		axios.defaults.withCredentials = true;
-		axios.get("http://localhost:3001/get/bizp",
-		{params : {
-			restaurantId: data
-		  }}
-		).then((response) => {
-			//update the state with the response data
-			console.log(response);
-			setname(response.data[0].name);
-			setaddress(response.data[0].address + "," + response.data[0].city);
-			settiming(response.data[0].timing);
-			setdescription(response.data[0].description);
-			// if(response.data[0].profile_img != null)     {
-			//   setpicture(<Avatar
-			//     variant="square"
-			//     src="https://s3-media0.fl.yelpcdn.com/assets/srv0/yelp_styleguide/7e4e0dfd903f/assets/img/default_avatars/user_large_square.png"
-			//      style={{
-			//      margin: "10px",
-			//      width: "220px",
-			//      height: "220px",
-			//    }}
-			//    />);
-			// } else {
-			//   setpicture(<img src={response.data[0].profileimg} style={{
-			//                   margin: "10px",
-			//                   width: "100px",
-			//                   height: "100px",
-			//                 }} />);
-			// }
-		});
+		setname(restaurant.name);
+		setaddress(restaurant.address + "," + restaurant.city);
+		settiming(restaurant.timing);
+		setdescription(restaurant.description);
+        // const data = localStorage.getItem('restaurantId');
+		// axios.defaults.withCredentials = true;
+		// axios.get("http://localhost:3001/get/bizp",
+		// {params : {
+		// 	restaurantId: data
+		//   }}
+		// ).then((response) => {
+		// 	//update the state with the response data
+		// 	console.log(response);
+		// 	setname(response.data[0].name);
+		// 	setaddress(response.data[0].address + "," + response.data[0].city);
+		// 	settiming(response.data[0].timing);
+		// 	setdescription(response.data[0].description);
+		// 	// if(response.data[0].profile_img != null)     {
+		// 	//   setpicture(<Avatar
+		// 	//     variant="square"
+		// 	//     src="https://s3-media0.fl.yelpcdn.com/assets/srv0/yelp_styleguide/7e4e0dfd903f/assets/img/default_avatars/user_large_square.png"
+		// 	//      style={{
+		// 	//      margin: "10px",
+		// 	//      width: "220px",
+		// 	//      height: "220px",
+		// 	//    }}
+		// 	//    />);
+		// 	// } else {
+		// 	//   setpicture(<img src={response.data[0].profileimg} style={{
+		// 	//                   margin: "10px",
+		// 	//                   width: "100px",
+		// 	//                   height: "100px",
+		// 	//                 }} />);
+		// 	// }
+		//});
 	}, []);
 
 	const classes = useStyles();
@@ -122,6 +128,14 @@ function Info() {
 	);
 }
 
+const mapStateToProps = (state) => {
+	console.log(state);
+	const restaurantData = state.restaurant;
+	const menuData = state.menu;
+	return {
+		restaurantData,
+	};
+};
 // const mapStateToProps = (state) => {
 //     return {
 //         firstname: state.profile.firstname,
@@ -130,4 +144,5 @@ function Info() {
 //   }
 
 //export default connect(mapStateToProps, null)(UserInfo);
-export default Info;
+//export default Info;
+export default connect(mapStateToProps, null)(Info);

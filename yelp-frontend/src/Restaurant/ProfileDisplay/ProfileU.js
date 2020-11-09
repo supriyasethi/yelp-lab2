@@ -30,6 +30,7 @@ function ProfileU(){
 
     useEffect(() => {
 		var restaurantId = localStorage.getItem("restaurant_id");
+		console.log('restaurantId',restaurantId);
 
 		axios.defaults.withCredentials = true;
 		axios.defaults.headers.common["authorization"] = localStorage.getItem(
@@ -56,7 +57,8 @@ function ProfileU(){
 						Orders: response.data.orders,
 						Reviews: response.data.reviews,
 						Events: response.data.events,
-					};					
+					};		
+					localStorage.setItem('RestaurantMenu', JSON.stringify(response.data.menu));			
 					dispatch(
 						getProfile(payload)
 					);

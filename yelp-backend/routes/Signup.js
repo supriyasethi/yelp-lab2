@@ -26,7 +26,7 @@ router.post("/user", async (req, res) => {
 
 			res.status(results.status);
 			// res.json(results.data);
-			res.end(results.data);
+			res.end(JSON.stringify(results.data));
 		}
 		return res;
 	});
@@ -54,7 +54,7 @@ router.post("/biz", async (req, res) => {
 
 			res.status(results.status);
 			// res.json(results.data);
-			res.end(results.data);
+			res.end(JSON.stringify(results.data));
 		}
 		return res;
 	});

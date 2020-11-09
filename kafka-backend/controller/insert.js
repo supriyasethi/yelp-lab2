@@ -329,21 +329,21 @@ async function handle_request(msg, callback) {
 					{ _id: message.messageid },
 					{ userid: message.userid },
 					{ restaurantid: message.restaurantid },
-					(error, message) => {
+					(error, msg) => {
 						if (error) {
-							response.status(500);
+							response.status(500);cd
 							response.data = "DB not connected !";
 							callback(null, response);
 						}
-						if (message) {
+						if (msg) {
 							console.log(message);
 							console.log("inside update only message");
 							console.log(message.length);
-							if (message.length > 0) {
+							if (msg.length > 0) {
 								//updateOnlyMessage(insertmessage, message.messageid);
 								Messages.findOneAndUpdate(
 									{ _id: message.messageid },
-									{ $addToSet: { messages: insertmessage } },
+									{ $push: { messages: insertmessage } },
 									{ safe: true, upsert: true },
 									function (error, data) {
 										if (error) {

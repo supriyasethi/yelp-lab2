@@ -56,10 +56,12 @@ function Users() {
 			})
 			.then((response) => {
 				console.log("searchUser", response);
-				setUserlist(response.data[0]);
+				let response_data = JSON.parse(response.data);
+				console.log("response_data", response_data);
+				setUserlist(response_data[0]);
 				setPageno(PageNo);
 				setPageCount(5);
-				setTotalCount(response.data[1]);
+				setTotalCount(response_data[1]);
 				let payload = Userlist;
 				console.log("payload in users", Userlist);
 				dispatch(getUserList(payload));

@@ -2,7 +2,7 @@
 const bcrypt = require("bcrypt");
 var passwordHash = require("password-hash");
 //const User = require("../models/User");
-const User = require("../models/User")
+const User = require("../models/User");
 const Restaurant = require("../models/Restaurant");
 
 function handle_request(msg, callback) {
@@ -50,8 +50,10 @@ function handle_request(msg, callback) {
 						});
 						userdata.save((error, data) => {
 							if (error) {
-								console.log("inside user data error", error);
-								callback(err1, null);
+								console.log("error", error);
+								response.status = 500;
+								response.data = error;
+								callback(null, response);
 							} else if (data) {
 								console.log("inside user data response", response);
 								response.status = 200;

@@ -1,68 +1,39 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1.	Goals and Purpose of System:
+The goal of this application is to provide convenience to restaurant business to provide more services to its customers.
+Also, for customers it provides options to search for the restaurants near to his place as well as any location. This application is simulation of yelp application in the real world.
+The application should be able to handle the large number of customers at the same time in parallel. Also, it should be able to authenticate each API request made by UI to backend.
 
-## Available Scripts
+2.	System Design:
+The application consists of below entities:
+a.	Customer – Customer should be able to perform below tasks:
+•	He can signup and login into the yelp application. 
+•	He can maintain his profile and update. 
+•	He will be able to search for dishname, restaurant along with the city name. 
+•	He can visit the restaurant profile, menu and place an order. 
+•	He can give reviews to the restaurant as well. 
+•	He can register himself for the events initiated by Restaurants.
+•	He can search the Customer list on yelp and can follow any customer.
+•	He can reply to the messages posted by restaurant for any queries related to orders.
 
-In the project directory, you can run:
+b.	Restaurant – A restaurant can perform below tasks:
+•	Signup and login to the application. 
+•	He can visit and update the profile of his restaurant. 
+•	He can update the dishes, events and orders. 
+•	He can also visit the profile of the user who ordered from him. 
+•	He can check who gave reviews to his restaurant and who are registered for the events initiated by them.
+•	He can message any user who has ordered from his restaurant for any queries.
 
-### `npm start`
+c.	MongoDB – The database used is MongoDB. As it is a document based database, it provides the advantage over MySQL when it comes to joins.
+d.	Kafka - For handling distribution of the application Kafka as a streaming has been used where pub-sub model is implemented between Kafka and backend of the application for each API request.
+e.	Redux – For managing the states of the application and speed up the application, redux has been used where multiple reducers are introduced for the screens where state needs to be managed.
+f.	JWT-Passport – For login authentication, JWT passport has been used at the backend NodeJS for verifying the user both customer and Restaurant.
+Below is the system design:
+	 
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Database:
+Below is the list of schemas created for the application using MongoDB
+1.	Users – Tables consists of customer information
+2.	Restaurants – Table consists of restaurant information along with reviews, orders and menu information
+3.	Events – Events created by restaurants. It consists of information about list of users registered for the event
+4.	Messages – The table manages the messaging conversation between Restaurant and User.
+5.	Userfollows – This table consists of information about which user is following which other user on yelp.

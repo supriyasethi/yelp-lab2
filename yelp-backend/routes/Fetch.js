@@ -182,6 +182,34 @@ router.get("/events", async (req, res) => {
 		});
 });
 
+router.get("/menu", async (req, res) => {
+	console.log("Inside fetch events route");
+	// const value = await fetchEvents(req, res);
+	// return value;
+	const data = {
+			api: "fetch_menu",
+			data: req.query,
+		};
+		kafka.make_request(config.fetch_topic, data, function (err, results) {
+			if (err) {
+				console.log("Inside err");
+				res.status(500);
+				res.json({
+					status: "error",
+					msg: "System Error, Try Again.",
+				});
+				res.end();
+			} else {
+				console.log("inside else of request");
+	
+				res.status(results.status);
+				// res.json(results.data);
+				res.end(JSON.stringify(results.data));
+			}
+			return res;
+		});
+});
+
 router.get("/messages", async (req, res) => {
 	console.log("Inside fetch messages route");
 	// const value = await fetchMessages(req, res);

@@ -7,13 +7,14 @@ import {
 } from "../actionconstants/action-types";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import serverUrl from "../../config.js";
 
 export function setLogin(payload) {
 	return (dispatch) => {
 		const user = payload.loginFormInfo.sender;
 		axios.defaults.withCredentials = true;
 		return axios
-			.post("http://localhost:3001/login/" + user, payload.loginFormInfo)
+			.post(serverUrl +"login/" + user, payload.loginFormInfo)
 			.then((response) => {
 				if (response.status === 200) {
 					if (user === "user") {

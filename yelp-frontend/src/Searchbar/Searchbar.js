@@ -101,7 +101,8 @@ export function Searchbar() {
 	}
 
 	function handleOrderRequest(e, id) {
-		localStorage.setItem("restaurantId", id);
+		console.log('id', id);
+		localStorage.setItem("restaurant_id", id);
 		if (cookie.load("cookie")) {
 			history.push("/bizdisplay");
 		} else history.push("/login/user");
@@ -163,17 +164,28 @@ export function Searchbar() {
 				</div>
 			</div>
 			<div className={classes.list}>
-				<div>{state.header}</div>
+				<div>{state.header}
 				<List>
-					{newRestaurant.map((listitem) => (
+					
+					{state.restaurants.map((listitem) => (						
 						<ListItem alignItems='flex-start' key={listitem._id}>
-							<ListItemAvatar>
+							<ListItemAvatar>							
 								<Avatar alt='Remy Sharp' src={logo} />
 							</ListItemAvatar>
 							<ListItemText
-								primary={listitem.dishname}
+								primary={listitem.name}
 								secondary={
 									<React.Fragment>
+										<div>
+											<Typography
+												component='span'
+												variant='body2'
+												className={classes.inline}
+												color='textPrimary'>
+												DishName:
+											</Typography>
+											{listitem.dishName}
+										</div>
 										<div>
 											<Typography
 												component='span'
@@ -185,14 +197,18 @@ export function Searchbar() {
 											{listitem.price}
 										</div>
 										<div>
-											<Typography
-												component='span'
+											<Link
+												component='button'
 												variant='body2'
-												className={classes.inline}
-												color='textPrimary'>
-												Ingredients:
-											</Typography>
-											{listitem.ingredients}
+												style={{
+													fontSize: "14px",
+													fontWeight: "bold",
+												}}
+												onClick={(event) =>
+													handleOrderRequest(event, listitem.restauarantid)
+												}>
+												Order Online
+											</Link>
 										</div>
 									</React.Fragment>
 								}
@@ -200,6 +216,7 @@ export function Searchbar() {
 						</ListItem>
 					))}
 				</List>
+				</div>
 				<Divider />
 			</div>
 		</div>

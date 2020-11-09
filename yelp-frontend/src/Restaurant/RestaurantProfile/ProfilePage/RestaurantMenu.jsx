@@ -30,41 +30,44 @@ function RestaurantMenu(restaurantData) {
 	const[menu, setMenu] = useState([]);
 	const[loading, setLoading] = useState(false);
 	const[currentPage, setCurrentPage] = useState(1);
-	const[postsPerPage] = useState(10);
+	const[postsPerPage] = useState(5);
 	let restaurantMenu = [];
 	
 	 useEffect(() => {
-		setMenu(JSON.parse(localStorage.getItem('RestaurantMenu')));		
+		setMenu(JSON.parse(localStorage.getItem('RestaurantMenu')));
+		if (menu === null) {
+			setMenu([])
+		}
 	},[]);
 
 	console.log('menu', menu);
 	//Get Current posts
-	const indexofLastPost = currentPage * postsPerPage;
-	const indexofFirstPost = indexofLastPost - postsPerPage;
-	const currentPosts = menu.slice(indexofFirstPost, indexofLastPost);
+	// const indexofLastPost = currentPage * postsPerPage;
+	// const indexofFirstPost = indexofLastPost - postsPerPage;
+	// const currentPosts = menu.slice(indexofFirstPost, indexofLastPost);
 	
-	const pageNumbers = [];
+	// const pageNumbers = [];
 
-	for (let i = 1; i <= Math.ceil((restaurantMenu.length) / postsPerPage); i++) {
-		pageNumbers.push(i);
-	}
+	// for (let i = 1; i <= Math.ceil((restaurantMenu.length) / postsPerPage); i++) {
+	// 	pageNumbers.push(i);
+	// }
 	
-	//Change Page
-	const paginate = (pageNumber) => setCurrentPage(pageNumber);
-	// const commonFetch = (PageNo = 0) => {
-	// 	let payload = {
-	// 	  menuList: [{ name: 'pr' }, { name: 'pr' }, { name: 'pr' }, { name: 'pr' }],
-	// 	  PageNo,
-	// 	  PageCount: Math.ceil(116 / 10),
-	// 	  Totalcount: 116,
+	// //Change Page
+	// const paginate = (pageNumber) => setCurrentPage(pageNumber);
+	// // const commonFetch = (PageNo = 0) => {
+	// // 	let payload = {
+	// // 	  menuList: [{ name: 'pr' }, { name: 'pr' }, { name: 'pr' }, { name: 'pr' }],
+	// // 	  PageNo,
+	// // 	  PageCount: Math.ceil(116 / 10),
+	// // 	  Totalcount: 116,
 	
-	// 	  // PageCount: Math.ceil(response.data.Totalcount / 3),
-	// 	};
-	// 	dispatch(
-	// 		menuList(payload)
-	// 	);
+	// // 	  // PageCount: Math.ceil(response.data.Totalcount / 3),
+	// // 	};
+	// // 	dispatch(
+	// // 		menuList(payload)
+	// // 	);
 		
-	//   };
+	// //   };
 
 
 	
@@ -124,18 +127,7 @@ function RestaurantMenu(restaurantData) {
 					</ListItem>
 				))}
 			</List>
-			<Divider />
-			<div className='module pt-xxsm'>
-				<ul className='pagination' style={{ justifyContent: "left" }}>
-					{pageNumbers.map((number) => (
-						<li key={number} className='page-item'>
-							<a onClick={() => paginate(number)} className='page-link'>
-								{number}
-							</a>
-						</li>
-					))}
-				</ul>
-			</div>
+			<Divider />			
 		</div>
 	);
 }
