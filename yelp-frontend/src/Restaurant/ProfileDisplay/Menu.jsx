@@ -168,8 +168,8 @@ const paginate = (pageNumber) => setCurrentPage(pageNumber);
 			id = newChecked[i];
 			console.log("id", id);
 			orderItem = orderItem + state.menu[id].items.dishName + ",";
-  
-  
+		}
+		}
 		console.log("orderItem", orderItem);
 		if (state.pickup) {
 			delieveryoption = "PickUp";
